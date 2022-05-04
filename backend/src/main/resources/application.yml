@@ -1,0 +1,35 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: ${spring.profiles.default:lc-dev}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      default_batch_fetch_size: 100
+      format_sql: true
+    open-in-view: false
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: true
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    disable-swagger-default-url: true
+    display-request-duration: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    syntax-highlight:
+      theme: nord
+  pre-loading-enabled: true
+jdbc:
+    h2:
+      datasource:
+        url: jdbc:h2:mem:midascoffee;INIT=CREATE SCHEMA IF NOT EXISTS MIDASCOFFEE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+        username: sa
+        password:
