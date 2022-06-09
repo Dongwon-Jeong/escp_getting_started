@@ -33,3 +33,6 @@ jdbc:
         url: jdbc:h2:mem:midascoffee;INIT=CREATE SCHEMA IF NOT EXISTS MIDASCOFFEE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
         username: sa
         password:
+      console:
+        enabled: true
+        path: /h2-console
