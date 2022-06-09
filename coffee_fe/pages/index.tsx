@@ -1,11 +1,9 @@
-import type { NextPage } from 'next'
+import CoffeeView from "../views/CoffeeView";
 
-const Home: NextPage = () => {
+const Home = () => {
   return (
-    <div>
-      Hello
-    </div>
+    <CoffeeView/>
   )
 }
 
-export default Home
+export default Home;
