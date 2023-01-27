@@ -3,3 +3,9 @@ server:
 spring:
   profiles:
     active: ${spring.profiles.default:local}
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+database:
+  api:
+    key: Bearer BJS3M8_-ZoDBDqXWcD9VJ7WExlOCKZX-TnuTbIE2-s_Hh2qXwA
