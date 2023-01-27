@@ -114,6 +114,14 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
+    public int deleteOrder(String uuid) {
+        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
+        cell.put("order", null);
+        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
+        return commonDAO.getResponseCode(connection, cell.toString());
+    }
+
+    @Override
     public JSONArray getCells() {
         return commonDAO.getItems(URL);
     }
@@ -136,6 +144,18 @@ public class CellDAOImpl implements CellDAO{
             String cellObjectName = (String) ((JSONObject) cellObject).get("name");
             if (cellObjectName.equals(cell)) {
                 return (JSONArray) ((JSONObject) cellObject).get("order");
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getCellIdByName(String cell) {
+        JSONArray cellArr = getCells();
+        for (Object cellObject : cellArr) {
+            String cellObjectName = (String) ((JSONObject) cellObject).get("name");
+            if (cellObjectName.equals(cell)) {
+                return (String) ((JSONObject) cellObject).get("_uuid");
             }
         }
         return null;

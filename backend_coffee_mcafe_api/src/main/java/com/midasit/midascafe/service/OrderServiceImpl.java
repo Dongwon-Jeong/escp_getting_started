@@ -2,7 +2,7 @@ package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.RegisterOrderRq;
 import com.midasit.midascafe.dao.*;
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 if (escape) { break; }
             }
         }
-        PostResponse postResponse = orderDAO.registerOrder(phone, menu, menuCode, optionCodes, price);
+        ResponseData postResponse = orderDAO.registerOrder(phone, menu, menuCode, optionCodes, price);
         JSONParser parser = new JSONParser();
         JSONObject responseJson;
         try {

@@ -12,8 +12,11 @@ public interface CellDAO {
     int addMember(String uuid, String member);
     int addOrder(String uuid, String order);
     int deleteOrder(String uuid, String order);
+    int deleteOrder(String uuid);
     JSONArray getCells();
     int deleteCell(String uuid);
 
     List<String> getOrderIdListByName(String cell);
+
+    String getCellIdByName(String cell);
 }

@@ -1,6 +1,6 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,14 +14,14 @@ public class MemberDAOImpl implements MemberDAO{
     private final CommonDAO commonDAO;
     private final static String URL = "https://crudapi.co.uk/api/v1/member";
     @Override
-    public PostResponse registerMember(String phone, String name, String cellId) {
+    public ResponseData registerMember(String phone, String name, String cellId) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("phone", phone);
         data.put("name", name);
         data.put("cell", cellId);
         body.add(data);
-        PostResponse postResponse = commonDAO.postRequest(body, URL);
+        ResponseData postResponse = commonDAO.postRequest(body, URL);
         return postResponse;
     }
 

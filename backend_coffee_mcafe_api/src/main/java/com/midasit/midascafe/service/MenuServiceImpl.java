@@ -4,7 +4,7 @@ import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionRq;
 import com.midasit.midascafe.dao.MenuDAO;
 import com.midasit.midascafe.dao.OptionDAO;
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -44,7 +44,7 @@ public class MenuServiceImpl implements MenuService{
 
 
     @Override
-    public PostResponse registerOption(RegisterOptionRq registerOptionRq) {
+    public ResponseData registerOption(RegisterOptionRq registerOptionRq) {
         List<String> nameList = registerOptionRq.getName();
         List<Integer> codeList = registerOptionRq.getCode();
         List<Integer> priceList = registerOptionRq.getPrice();
@@ -52,7 +52,7 @@ public class MenuServiceImpl implements MenuService{
         String description = registerOptionRq.getDescription();
 
 
-        PostResponse postResponse = optionDAO.registerOption(nameList, codeList, priceList, essential, description);
+        ResponseData postResponse = optionDAO.registerOption(nameList, codeList, priceList, essential, description);
 
         JSONParser parser = new JSONParser();
         JSONObject responseJson;

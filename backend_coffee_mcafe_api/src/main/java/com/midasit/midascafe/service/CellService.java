@@ -12,7 +12,6 @@ public interface CellService {
     List<String> getCellList();
 
     JSONArray getMemberList(String cell);
-
     int modifyCellName(String name, ModifyCellNameRq modifyCellNameRq);
 
     int deleteCell(String name);

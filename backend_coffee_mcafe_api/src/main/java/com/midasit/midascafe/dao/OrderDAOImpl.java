@@ -1,6 +1,6 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +16,7 @@ public class OrderDAOImpl implements OrderDAO {
     private final static String URL = "https://crudapi.co.uk/api/v1/order";
 
     @Override
-    public PostResponse registerOrder(String phone, String menuName, String menuCode, List<Long> options, Long price) {
+    public ResponseData registerOrder(String phone, String menuName, String menuCode, List<Long> options, Long price) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("phone", phone);
@@ -25,7 +25,7 @@ public class OrderDAOImpl implements OrderDAO {
         data.put("options", options);
         data.put("price", price);
         body.add(data);
-        PostResponse postResponse = commonDAO.postRequest(body, URL);
+        ResponseData postResponse = commonDAO.postRequest(body, URL);
         return postResponse;
     }
 

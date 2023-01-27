@@ -3,7 +3,7 @@ package com.midasit.midascafe.service;
 import com.midasit.midascafe.controller.rqrs.RegisterMemberRq;
 import com.midasit.midascafe.dao.CellDAO;
 import com.midasit.midascafe.dao.MemberDAO;
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService{
             return 404;
         }
 
-        PostResponse postResponse = memberDAO.registerMember(phone, name, cellId);
+        ResponseData postResponse = memberDAO.registerMember(phone, name, cellId);
         JSONParser parser = new JSONParser();
         JSONObject responseJson;
         try {

@@ -1,6 +1,7 @@
 package com.midasit.midascafe.controller;
 
 import com.midasit.midascafe.controller.rqrs.PayOrderRq;
+import com.midasit.midascafe.dto.ResponseData;
 import com.midasit.midascafe.service.PayService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,16 +25,14 @@ public class PayController {
     @Operation(summary = "음료 주문", description = "주문을 취합하여 음료를 주문합니다.")
     @PostMapping
     public ResponseEntity<String> payOrder(@RequestBody @Valid PayOrderRq payOrderRq) {
-        int statusCode = payService.payOrder(payOrderRq);
-
-        if (statusCode == 201) {
-            return ResponseEntity.ok("주문 성공");
+        ResponseData responseData = payService.payOrder(payOrderRq);
+        int statusCode = responseData.getStatusCode();
+        if (statusCode == 200) {
+            return ResponseEntity.ok(responseData.getResponseData());
         } else if (statusCode == 404) {
-            return new ResponseEntity<>("해당 사용자를 찾을 수 없습니다." , HttpStatus.NOT_FOUND);
-        } else if (statusCode == 409) {
-            return new ResponseEntity<>("이미 주문이 있습니다.", HttpStatus.CONFLICT);
+            return new ResponseEntity<>(responseData.getResponseData() , HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>("주문 등록에 실패하였습니다.", HttpStatus.valueOf(statusCode));
+            return new ResponseEntity<>("주문에 실패하였습니다.\n" + responseData.getResponseData(), HttpStatus.valueOf(statusCode));
         }
     }
 }

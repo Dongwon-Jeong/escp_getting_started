@@ -1,7 +1,8 @@
 package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.PayOrderRq;
+import com.midasit.midascafe.dto.ResponseData;
 
 public interface PayService {
-    int payOrder(PayOrderRq payOrderRq);
+    ResponseData payOrder(PayOrderRq payOrderRq);
 }

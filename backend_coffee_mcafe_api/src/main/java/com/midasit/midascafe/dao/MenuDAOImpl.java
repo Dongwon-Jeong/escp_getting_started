@@ -1,6 +1,5 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

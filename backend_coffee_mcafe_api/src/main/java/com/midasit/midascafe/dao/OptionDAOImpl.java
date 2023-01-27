@@ -1,6 +1,6 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +16,7 @@ public class OptionDAOImpl implements OptionDAO{
     private final static String URL = "https://crudapi.co.uk/api/v1/option";
 
     @Override
-    public PostResponse registerOption(List<String> name, List<Integer> code, List<Integer> price, boolean essential, String description) {
+    public ResponseData registerOption(List<String> name, List<Integer> code, List<Integer> price, boolean essential, String description) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
 

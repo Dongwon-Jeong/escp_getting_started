@@ -2,7 +2,7 @@ package com.midasit.midascafe.controller;
 
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionRq;
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import com.midasit.midascafe.service.MenuService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +50,7 @@ public class MenuController {
     @Operation(summary = "옵션 등록", description = "새로운 옵션을 등록합니다.")
     @PostMapping("/option")
     public ResponseEntity<String> registerOption(@RequestBody @Valid RegisterOptionRq registerOptionRq) {
-        PostResponse postResponse = menuService.registerOption(registerOptionRq);
+        ResponseData postResponse = menuService.registerOption(registerOptionRq);
         int statusCode = postResponse.getStatusCode();
 
         if (statusCode == 201) {

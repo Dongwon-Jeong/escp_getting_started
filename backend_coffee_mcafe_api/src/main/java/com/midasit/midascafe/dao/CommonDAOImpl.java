@@ -1,6 +1,6 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.PostResponse;
+import com.midasit.midascafe.dto.ResponseData;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,7 +34,7 @@ public class CommonDAOImpl implements CommonDAO{
     }
 
     @Override
-    public PostResponse postRequest(JSONArray body, String url) {
+    public ResponseData postRequest(JSONArray body, String url) {
         int responseCode;
         String responseData;
         try {
@@ -55,7 +55,7 @@ public class CommonDAOImpl implements CommonDAO{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return PostResponse
+        return ResponseData
                 .builder()
                 .statusCode(responseCode)
                 .responseData(responseData)

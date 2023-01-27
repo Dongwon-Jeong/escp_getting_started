@@ -7,7 +7,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class PostResponse {
+public class ResponseData {
     int statusCode;
     String responseData;
 }
