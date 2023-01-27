@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mcafe_api:
+    container_name: mcafe_api
+    restart: always
+    build:
+      context: .
+    ports:
+      - '8099:8080'
