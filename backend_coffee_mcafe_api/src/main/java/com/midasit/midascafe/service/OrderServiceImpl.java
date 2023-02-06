@@ -20,7 +20,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     private final MenuDAO menuDAO;
     private final MemberDAO memberDAO;
-    private final OptionDAO optionDAO;
+    private final OptionGroupDAO optionDAO;
     private final CellDAO cellDAO;
     @Override
     public int registerOrder(RegisterOrderRq registerOrderRq) {
@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 옵션 이름 -> 옵션 코드 변환
         for (Object optionId : optionIdArr) {
-            JSONObject option = optionDAO.getOptionById((String) optionId);
+            JSONObject option = optionDAO.getOptionGroupById((String) optionId);
             JSONArray optionNameArr = (JSONArray) option.get("name");
             JSONArray optionCodeArr = (JSONArray) option.get("code");
             JSONArray optionPriceArr = (JSONArray) option.get("price");

@@ -75,14 +75,18 @@ public class CommonDAOImpl implements CommonDAO{
             while ((inputLine = br.readLine()) != null) {
                 sb.append(inputLine);
             }
-
+            if (connection.getResponseCode() >= 400) {
+                return null;
+            }
             JSONParser parser = new JSONParser();
             JSONObject response = (JSONObject) parser.parse(sb.toString());
             items = (JSONArray) response.get("items");
 
             connection.disconnect();
-        } catch (ParseException | IOException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            return null;
         }
 
         return items;
@@ -106,10 +110,11 @@ public class CommonDAOImpl implements CommonDAO{
             item = (JSONObject) parser.parse(sb.toString());
 
             connection.disconnect();
-        } catch (ParseException | IOException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            return null;
         }
-
         return item;
     }
 
