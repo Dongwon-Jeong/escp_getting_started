@@ -3,6 +3,7 @@ package com.midasit.midascafe.controller;
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionGroupRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionValueRq;
+import com.midasit.midascafe.dto.Menu;
 import com.midasit.midascafe.dto.ResponseData;
 import com.midasit.midascafe.service.MenuService;
 import io.swagger.annotations.Api;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Api(tags = "Menu Controller")
 @RestController
@@ -39,8 +41,8 @@ public class MenuController {
     @Operation(summary = "메뉴 목록", description = "메뉴 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity getMenuList() {
-
-        return null;
+        List<Menu> menuList = menuService.getMenuList();
+        return new ResponseEntity<>(menuList, HttpStatus.OK);
     }
 
     @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다.")
