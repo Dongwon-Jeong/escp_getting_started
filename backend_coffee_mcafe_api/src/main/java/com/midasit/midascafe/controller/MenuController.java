@@ -71,8 +71,8 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 그룹 삭제", description = "옵션 그룹을 삭제합니다.")
-    @DeleteMapping("/option/{group}")
-    public ResponseEntity<String> deleteOptionGroup(@PathVariable("group") String groupId) {
+    @DeleteMapping("/option/{groupId}")
+    public ResponseEntity<String> deleteOptionGroup(@PathVariable("groupId") String groupId) {
         int statusCode = menuService.deleteOptionGroup(groupId);
 
         if (statusCode == 200) {
@@ -85,8 +85,8 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 값 등록", description = "새로운 옵션 값을 등록합니다.")
-    @PostMapping("/option/{group}/value")
-    public ResponseEntity<String> registerOptionValue(@RequestBody @Valid RegisterOptionValueRq registerOptionValueRq, @PathVariable("group") String groupId) {
+    @PostMapping("/option/{groupId}/value")
+    public ResponseEntity<String> registerOptionValue(@RequestBody @Valid RegisterOptionValueRq registerOptionValueRq, @PathVariable("groupId") String groupId) {
         ResponseData postResponse = menuService.registerOptionValue(registerOptionValueRq, groupId);
         int statusCode = postResponse.getStatusCode();
         if (statusCode == 201) {
@@ -99,8 +99,8 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 값 삭제", description = "옵션 값을 삭제합니다.")
-    @DeleteMapping("/option/{group}/{value}")
-    public ResponseEntity<String> deleteOptionValue(@PathVariable("group") String groupId, @PathVariable("value") String valueId) {
+    @DeleteMapping("/option/{groupId}/{valueId}")
+    public ResponseEntity<String> deleteOptionValue(@PathVariable("groupId") String groupId, @PathVariable("valueId") String valueId) {
         int statusCode = menuService.deleteOptionValue(groupId, valueId);
         if (statusCode == 200) {
             return ResponseEntity.ok("옶견 값 삭제 성공");
