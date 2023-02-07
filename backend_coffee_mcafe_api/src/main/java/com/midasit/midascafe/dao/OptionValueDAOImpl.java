@@ -29,11 +29,6 @@ public class OptionValueDAOImpl implements OptionValueDAO {
     }
 
     @Override
-    public JSONObject getOptionValueById(String optionValueId) {
-        return commonDAO.getItem(URL + "/" + optionValueId);
-    }
-
-    @Override
     public int deleteOptionValue(String valueId) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();

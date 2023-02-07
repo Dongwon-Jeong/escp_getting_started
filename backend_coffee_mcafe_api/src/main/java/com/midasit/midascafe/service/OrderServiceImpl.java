@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
         JSONArray optionIdArr = null;
         String menuCode = null;
         Long price = 0L;
-        JSONArray menuArr = menuDAO.getMenuList();
+        JSONArray menuArr = menuDAO.getMenu();
         for (Object menuObject : menuArr) {
             String menuName = (String) ((JSONObject) menuObject).get("name");
             if (menuName.equals(menu)) {

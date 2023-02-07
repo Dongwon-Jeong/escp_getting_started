@@ -33,8 +33,8 @@ public class OptionGroupDAOImpl implements OptionGroupDAO {
     }
 
     @Override
-    public JSONObject getOptionGroupById(String optionGroupId) {
-        return commonDAO.getItem(URL + "/" + optionGroupId);
+    public JSONObject getOptionGroupById(String uuid) {
+        return commonDAO.getItem(URL + "/" + uuid);
     }
 
     @Override

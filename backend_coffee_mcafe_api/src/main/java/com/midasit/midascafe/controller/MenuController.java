@@ -3,7 +3,6 @@ package com.midasit.midascafe.controller;
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionGroupRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionValueRq;
-import com.midasit.midascafe.dto.Menu;
 import com.midasit.midascafe.dto.ResponseData;
 import com.midasit.midascafe.service.MenuService;
 import io.swagger.annotations.Api;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Api(tags = "Menu Controller")
 @RestController
@@ -41,8 +39,8 @@ public class MenuController {
     @Operation(summary = "메뉴 목록", description = "메뉴 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity getMenuList() {
-        List<Menu> menuList = menuService.getMenuList();
-        return new ResponseEntity<>(menuList, HttpStatus.OK);
+
+        return null;
     }
 
     @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다.")
@@ -73,7 +71,7 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 그룹 삭제", description = "옵션 그룹을 삭제합니다.")
-    @DeleteMapping("/option/{groupId}")
+    @DeleteMapping("/option/group/{groupId}")
     public ResponseEntity<String> deleteOptionGroup(@PathVariable("groupId") String groupId) {
         int statusCode = menuService.deleteOptionGroup(groupId);
 
@@ -87,7 +85,7 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 값 등록", description = "새로운 옵션 값을 등록합니다.")
-    @PostMapping("/option/{groupId}/value")
+    @PostMapping("/option/group/{groupId}/value")
     public ResponseEntity<String> registerOptionValue(@RequestBody @Valid RegisterOptionValueRq registerOptionValueRq, @PathVariable("groupId") String groupId) {
         ResponseData postResponse = menuService.registerOptionValue(registerOptionValueRq, groupId);
         int statusCode = postResponse.getStatusCode();
@@ -101,7 +99,7 @@ public class MenuController {
     }
 
     @Operation(summary = "옵션 값 삭제", description = "옵션 값을 삭제합니다.")
-    @DeleteMapping("/option/{groupId}/{valueId}")
+    @DeleteMapping("/option/group/{groupId}/value/{valueId}")
     public ResponseEntity<String> deleteOptionValue(@PathVariable("groupId") String groupId, @PathVariable("valueId") String valueId) {
         int statusCode = menuService.deleteOptionValue(groupId, valueId);
         if (statusCode == 200) {
