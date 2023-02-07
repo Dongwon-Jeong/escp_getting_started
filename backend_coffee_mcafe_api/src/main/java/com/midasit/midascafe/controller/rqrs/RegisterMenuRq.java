@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -17,8 +18,9 @@ public class RegisterMenuRq {
     String code;
 
     @Schema(description = "가격")
-    int unitPrice;
+    @NotNull
+    Integer unitPrice;
 
-    @Schema(description = "옵션 uuid")
-    List<String> option;
+    @Schema(description = "옵션 그룹 uuid 리스트")
+    List<String> optionGroupIdList;
 }
