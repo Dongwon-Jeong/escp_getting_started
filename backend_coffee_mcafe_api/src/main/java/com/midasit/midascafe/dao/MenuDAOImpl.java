@@ -26,7 +26,7 @@ public class MenuDAOImpl implements MenuDAO{
 
 
     @Override
-    public JSONArray getMenu() {
+    public JSONArray getMenuList() {
         return commonDAO.getItems(URL);
     }
 }
