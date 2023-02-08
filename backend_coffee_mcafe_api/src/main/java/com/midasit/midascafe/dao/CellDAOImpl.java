@@ -75,13 +75,26 @@ public class CellDAOImpl implements CellDAO{
 
 
     @Override
-    public int addMember(String uuid, String member) {
+    public int addMember(String uuid, String memberId) {
         JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
         JSONArray memberArr = (JSONArray) cell.get("member");
         if (memberArr == null) {
             memberArr = new JSONArray();
         }
-        memberArr.add(member);
+        memberArr.add(memberId);
+        cell.put("member", memberArr);
+        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
+        return commonDAO.getResponseCode(connection, cell.toString());
+    }
+
+    @Override
+    public int deleteMember(String uuid, String memberId) {
+        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
+        JSONArray memberArr = (JSONArray) cell.get("member");
+        if (memberArr == null) {
+            memberArr = new JSONArray();
+        }
+        memberArr.remove(memberId);
         cell.put("member", memberArr);
         HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
         return commonDAO.getResponseCode(connection, cell.toString());
@@ -128,13 +141,7 @@ public class CellDAOImpl implements CellDAO{
 
     @Override
     public int deleteCell(String uuid) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("_uuid", uuid);
-        body.add(data);
-
-        HttpURLConnection connection = commonDAO.getConnection(URL, "DELETE");
-        return commonDAO.getResponseCode(connection, body.toString());
+        return commonDAO.deleteItem(URL, uuid);
     }
 
     @Override

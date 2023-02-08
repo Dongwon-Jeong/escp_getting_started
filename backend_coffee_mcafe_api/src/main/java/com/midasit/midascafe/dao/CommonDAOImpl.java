@@ -118,6 +118,17 @@ public class CommonDAOImpl implements CommonDAO{
         return item;
     }
 
+    @Override
+    public int deleteItem(String url, String uuid) {
+        JSONArray body = new JSONArray();
+        JSONObject data = new JSONObject();
+        data.put("_uuid", uuid);
+        body.add(data);
+
+        HttpURLConnection connection = getConnection(url, "DELETE");
+        return getResponseCode(connection, body.toString());
+    }
+
     public int getResponseCode(HttpURLConnection connection, String data) {
         int responseCode;
         try {

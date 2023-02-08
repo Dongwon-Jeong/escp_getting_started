@@ -6,6 +6,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
+import java.net.HttpURLConnection;
+
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
@@ -71,6 +73,11 @@ public class MemberDAOImpl implements MemberDAO{
     @Override
     public JSONArray getMembers() {
         return commonDAO.getItems(URL);
+    }
+
+    @Override
+    public int deleteMember(String uuid) {
+        return commonDAO.deleteItem(URL, uuid);
     }
 
 

@@ -39,13 +39,7 @@ public class OptionGroupDAOImpl implements OptionGroupDAO {
 
     @Override
     public int deleteOptionGroup(String groupId) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("_uuid", groupId);
-        body.add(data);
-
-        HttpURLConnection connection = commonDAO.getConnection(URL, "DELETE");
-        return commonDAO.getResponseCode(connection, body.toString());
+        return commonDAO.deleteItem(URL, groupId);
     }
 
     @Override

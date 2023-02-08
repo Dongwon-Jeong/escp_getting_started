@@ -33,4 +33,18 @@ public class MemberController {
             return new ResponseEntity<>("멤버 등록에 실패하였습니다.", HttpStatus.valueOf(statusCode));
         }
     }
+
+    @Operation(summary = "멤버 삭제", description = "멤버를 삭제합니다.")
+    @DeleteMapping("/{phone}")
+    public ResponseEntity<String> deleteMember(@PathVariable("phone") String phone) {
+        int statusCode = memberService.deleteMember(phone);
+
+        if (statusCode == 200) {
+            return ResponseEntity.ok("멤버 삭제 성공");
+        } else if (statusCode == 404) {
+            return new ResponseEntity<>("멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>("멤버 삭제에 실패하였습니다.", HttpStatus.valueOf(statusCode));
+        }
+    }
 }
