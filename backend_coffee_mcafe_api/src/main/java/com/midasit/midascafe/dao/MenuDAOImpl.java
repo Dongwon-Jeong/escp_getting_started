@@ -29,4 +29,16 @@ public class MenuDAOImpl implements MenuDAO{
     public JSONArray getMenuList() {
         return commonDAO.getItems(URL);
     }
+
+    @Override
+    public JSONObject getMenuByCode(String code) {
+        JSONArray items = getMenuList();
+        for (Object item : items) {
+            String itemCode = (String) ((JSONObject) item).get("code");
+            if (itemCode.equals(code)) {
+                return (JSONObject) item;
+            }
+        }
+        return null;
+    }
 }

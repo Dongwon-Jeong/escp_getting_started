@@ -13,10 +13,9 @@ public class RegisterOrderRq {
     String phone;
     @Schema(description = "주문 메뉴")
     @NotBlank
-    String menu;
+    String menuCode;
     @Schema(description = "옵션 리스트")
-    List<String> option;
-
+    List<Integer> optionValueList;
     @Schema(description = "고정 메뉴로 사용")
     Boolean setDefault;
 }

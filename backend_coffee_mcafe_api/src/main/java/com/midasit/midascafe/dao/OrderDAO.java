@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 
 public interface OrderDAO {
-    ResponseData registerOrder(String phone, String menuName, String menuCode, List<Long> options, Long price);
+    ResponseData registerOrder(String memberId, String cellId, String menuId, List<String> optionValueIdList, boolean setDefault);
     int deleteOrder(String uuid);
     JSONArray getOrders();
     JSONObject getOrder(String uuid);

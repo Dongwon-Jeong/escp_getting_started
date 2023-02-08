@@ -2,6 +2,7 @@ package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.RegisterOrderRq;
 import com.midasit.midascafe.dao.*;
+import com.midasit.midascafe.dto.OptionGroup;
 import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -20,68 +21,42 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     private final MenuDAO menuDAO;
     private final MemberDAO memberDAO;
-    private final OptionGroupDAO optionDAO;
+    private final OptionGroupDAO optionGroupDAO;
+    private final OptionValueDAO optionValueDAO;
     private final CellDAO cellDAO;
     @Override
     public int registerOrder(RegisterOrderRq registerOrderRq) {
         String phone = registerOrderRq.getPhone();
         if (hasOrder(phone)) { return 409; }
+        String memberId = memberDAO.getIdByPhone(phone);
         String cellId = memberDAO.getCellIdByPhone(phone);
         if(cellId == null) { return 404; }
+        String menuCode = registerOrderRq.getMenuCode();
+        JSONObject menu = menuDAO.getMenuByCode(menuCode);
+        String menuId = (String) menu.get("_uuid");
+        List<Integer> optionValueList = registerOrderRq.getOptionValueList();
+        List<String> optionValueIdList = new ArrayList<>();
 
-        String menu = registerOrderRq.getMenu();
-        List<String> optionNames = registerOrderRq.getOption();
-        List<Long> optionCodes = new ArrayList<>();
-
-        // 메뉴에 대한 옵션 uuid 리스트
-        JSONArray optionIdArr = null;
-        String menuCode = null;
-        Long price = 0L;
-        JSONArray menuArr = menuDAO.getMenuList();
-        for (Object menuObject : menuArr) {
-            String menuName = (String) ((JSONObject) menuObject).get("name");
-            if (menuName.equals(menu)) {
-                optionIdArr = (JSONArray) ((JSONObject) menuObject).get("option");
-                menuCode = (String) ((JSONObject) menuObject).get("code");
-                price = (Long) ((JSONObject) menuObject).get("unitPrice");
-            }
-        }
-
-        // 옵션 이름 -> 옵션 코드 변환
-        for (Object optionId : optionIdArr) {
-            JSONObject option = optionDAO.getOptionGroupById((String) optionId);
-            JSONArray optionNameArr = (JSONArray) option.get("name");
-            JSONArray optionCodeArr = (JSONArray) option.get("code");
-            JSONArray optionPriceArr = (JSONArray) option.get("price");
-            int optionCnt = optionNames.size();
-            int matchCnt = 0;
-            boolean escape = false;
-            for (int i = 0; i < optionNameArr.size(); i++) {
-                for (int j = 0; j < optionCnt; j++) {
-                    if (optionNameArr.get(i).equals(optionNames.get(j))) {
-                        optionCodes.add((Long) optionCodeArr.get(i));
-                        if (optionPriceArr != null) {
-                            price += (Long) optionPriceArr.get(i);
-                        }
-                        matchCnt++;
-                        if (matchCnt == optionCnt) { escape = true; }
+        JSONArray optionGroupIdList = (JSONArray) menu.get("optionGroupIdList");
+        for (Object optionGroupId : optionGroupIdList) {
+            JSONObject optionGroup = optionGroupDAO.getOptionGroupById((String) optionGroupId);
+            JSONArray valueIdList = (JSONArray) optionGroup.get("optionValueIdList");
+            for (Object valueId : valueIdList) {
+                JSONObject optionValueObj = optionValueDAO.getOptionValueById((String) valueId);
+                long code = (long) optionValueObj.get("code");
+                for (int optionValue : optionValueList) {
+                    if (optionValue == code) {
+                        optionValueIdList.add((String) valueId);
+                        break;
                     }
-                    if (escape) { break; }
                 }
-                if (escape) { break; }
             }
         }
-        ResponseData postResponse = orderDAO.registerOrder(phone, menu, menuCode, optionCodes, price);
-        JSONParser parser = new JSONParser();
-        JSONObject responseJson;
-        try {
-            responseJson = (JSONObject) parser.parse(postResponse.getResponseData());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        String uuid = (String) ((JSONObject) ((JSONArray) responseJson.get("items")).get(0)).get("_uuid");
 
-        cellDAO.addOrder(cellId, uuid);
+        boolean setDefault = registerOrderRq.getSetDefault();
+
+        ResponseData postResponse = orderDAO.registerOrder(memberId, cellId, menuId, optionValueIdList, setDefault);
+
         return postResponse.getStatusCode();
     }
 
@@ -89,11 +64,10 @@ public class OrderServiceImpl implements OrderService {
     public int deleteOrder(String phone) {
         JSONArray orders = orderDAO.getOrders();
         for (Object orderObject : orders) {
-            String orderPhone = (String) ((JSONObject) orderObject).get("phone");
-            if(orderPhone.equals(phone)) {
+            String orderMemberId = (String) ((JSONObject) orderObject).get("memberId");
+            String memberId = memberDAO.getIdByPhone(phone);
+            if(orderMemberId.equals(memberId)) {
                 String uuid = (String) ((JSONObject) orderObject).get("_uuid");
-                String cellId = memberDAO.getCellIdByPhone(phone);
-                cellDAO.deleteOrder(cellId, uuid);
                 return orderDAO.deleteOrder(uuid);
             }
         }
@@ -103,22 +77,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean hasOrder(String phone) {
         JSONArray orderArr = orderDAO.getOrders();
-
+        String memberId = memberDAO.getIdByPhone(phone);
         for (Object order : orderArr) {
-            String orderPhone = (String) ((JSONObject) order).get("phone");
-            if (orderPhone.equals(phone)) { return true; }
+            String orderMemberId = (String) ((JSONObject) order).get("memberId");
+            if (orderMemberId.equals(memberId)) { return true; }
         }
         return false;
     }
-
-//    public JSONArray getOptionIdArr(String name) {
-//        JSONArray menuArr = menuDAO.getMenu();
-//        for (Object menu : menuArr) {
-//            String menuName = (String) ((JSONObject) menu).get("name");
-//            if (menuName.equals(name)) {
-//                return (JSONArray) ((JSONObject) menu).get("option");
-//            }
-//        }
-//        return null;
-//    }
 }

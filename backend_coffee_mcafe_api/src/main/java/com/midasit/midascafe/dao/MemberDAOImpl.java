@@ -33,6 +33,18 @@ public class MemberDAOImpl implements MemberDAO{
     }
 
     @Override
+    public String getIdByPhone(String phone) {
+        JSONArray items = getMembers();
+        for (Object item : items) {
+            String itemPhone = (String) ((JSONObject) item).get("phone");
+            if (itemPhone.equals(phone)) {
+                return (String) ((JSONObject) item).get("_uuid");
+            }
+        }
+        return null;
+    }
+
+    @Override
     public String getCellIdByPhone(String phone) {
         JSONArray items = getMembers();
         for (Object item : items) {
