@@ -3,13 +3,11 @@ package com.midasit.midascafe.service;
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionGroupRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionValueRq;
+import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MenuDAO;
 import com.midasit.midascafe.dao.OptionGroupDAO;
 import com.midasit.midascafe.dao.OptionValueDAO;
-import com.midasit.midascafe.dto.Menu;
-import com.midasit.midascafe.dto.OptionGroup;
-import com.midasit.midascafe.dto.OptionValue;
-import com.midasit.midascafe.dto.ResponseData;
+import com.midasit.midascafe.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,6 +24,7 @@ public class MenuServiceImpl implements MenuService{
     private final MenuDAO menuDAO;
     private final OptionGroupDAO optionGroupDAO;
     private final OptionValueDAO optionValueDAO;
+    private final CommonDAO commonDAO;
     @Override
     public int registerMenu(RegisterMenuRq registerMenuRq) {
         String name = registerMenuRq.getName();
@@ -63,42 +62,11 @@ public class MenuServiceImpl implements MenuService{
             String menuName = (String) ((JSONObject) item).get("name");
             String menuCode = (String) ((JSONObject) item).get("code");
             Long unitPrice = (Long) ((JSONObject) item).get("unitPrice");
-            List<OptionGroup> optionGroupList = new ArrayList<>();
-            JSONArray optionGroupIdList = (JSONArray) ((JSONObject) item).get("optionGroupIdList");
-            for (Object optionGroupId : optionGroupIdList) {
-                JSONObject optionGroup = optionGroupDAO.getOptionGroupById((String) optionGroupId);
-                String optionGroupName = (String) optionGroup.get("name");
-                Boolean essential = (Boolean) optionGroup.get("essential");
-                Object descriptionObj = optionGroup.get("description");
-                String description = "";
-                if(descriptionObj != null) {
-                    description = (String) descriptionObj;
-                }
-                List<OptionValue> optionValueList = new ArrayList<>();
-                JSONArray optionValueIdList = (JSONArray) optionGroup.get("optionValueIdList");
-                for (Object optionValueId : optionValueIdList) {
-                    JSONObject optionValue = optionValueDAO.getOptionValueById((String) optionValueId);
-                    String optionValueName = (String) optionValue.get("name");
-                    Long optionValueCode = (Long) optionValue.get("code");
-                    Long optionValuePrice = (Long) optionValue.get("price");
-                    optionValueList.add(OptionValue.builder()
-                            .name(optionValueName)
-                            .code(optionValueCode)
-                            .price(optionValuePrice)
-                            .build());
-                }
-                optionGroupList.add(OptionGroup.builder()
-                        .name(optionGroupName)
-                        .essential(essential)
-                        .description(description)
-                        .optionValueList(optionValueList)
-                        .build());
-            }
+
             menuList.add(Menu.builder()
                     .name(menuName)
                     .code(menuCode)
                     .unitPrice(unitPrice)
-                    .optionGroupList(optionGroupList)
                     .build());
         }
         return menuList;
@@ -158,6 +126,43 @@ public class MenuServiceImpl implements MenuService{
             optionValueDAO.deleteOptionValue((String) optionValueId);
         }
         return optionGroupDAO.deleteOptionGroup(groupId);
+    }
+
+    @Override
+    public MenuDetail getMenuDetail(String menuCode) {
+        String url = String.format("https://uchef.co.kr/webApp.action?mode=5170&item_code=%s&shop_member_seq=1859", menuCode);
+        JSONObject menuItem = (JSONObject) ((JSONArray) ((JSONObject) (commonDAO.getItem(url).get("searchResult"))).get("list")).get(0);
+        List<OptionGroup> optionGroupList = new ArrayList<>();
+
+        JSONArray optionGroupJsonArray = (JSONArray) menuItem.get("option_group");
+        for (Object optionGroupObj : optionGroupJsonArray) {
+            JSONObject optionGroupJson = (JSONObject) optionGroupObj;
+            List<OptionValue> optionValueList = new ArrayList<>();
+
+            JSONArray optionValueJsonArray = (JSONArray) optionGroupJson.get("options");
+            for (Object optionValueObj : optionValueJsonArray) {
+                JSONObject optionValueJson = (JSONObject) optionValueObj;
+                optionValueList.add(OptionValue.builder()
+                        .name((String) optionValueJson.get("option_name"))
+                        .code((Long) optionValueJson.get("option_seq"))
+                        .price((Long) optionValueJson.get("option_price"))
+                        .build());
+            }
+
+            optionGroupList.add(OptionGroup.builder()
+                    .name((String) optionGroupJson.get("group_name"))
+                    .selectMin((Long) optionGroupJson.get("group_min"))
+                    .selectMax((Long) optionGroupJson.get("group_max"))
+                    .optionValueList(optionValueList)
+                    .build());
+        }
+        return MenuDetail.builder()
+                .name((String) menuItem.get("item_name"))
+                .code((String) menuItem.get("item_code"))
+                .unitPrice((Long) menuItem.get("item_price"))
+                .stock((Long) menuItem.get("item_stock"))
+                .optionGroupList(optionGroupList)
+                .build();
     }
 
     public String extractUuid(ResponseData responseData) {

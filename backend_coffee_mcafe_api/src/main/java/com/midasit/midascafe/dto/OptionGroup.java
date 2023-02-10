@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 public class OptionGroup {
     String name;
-    Boolean essential;
-    String description;
+    Long selectMin;
+    Long selectMax;
     List<OptionValue> optionValueList;
 }
