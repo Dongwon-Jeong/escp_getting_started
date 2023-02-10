@@ -4,6 +4,7 @@ import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionGroupRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionValueRq;
 import com.midasit.midascafe.dto.Menu;
+import com.midasit.midascafe.dto.MenuDetail;
 import com.midasit.midascafe.dto.ResponseData;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface MenuService {
     int deleteOptionValue(String groupId, String valueId);
 
     int deleteOptionGroup(String groupId);
+
+    MenuDetail getMenuDetail(String menuCode);
 }

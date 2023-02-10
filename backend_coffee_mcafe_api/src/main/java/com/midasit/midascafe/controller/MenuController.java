@@ -4,6 +4,7 @@ import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionGroupRq;
 import com.midasit.midascafe.controller.rqrs.RegisterOptionValueRq;
 import com.midasit.midascafe.dto.Menu;
+import com.midasit.midascafe.dto.MenuDetail;
 import com.midasit.midascafe.dto.ResponseData;
 import com.midasit.midascafe.service.MenuService;
 import io.swagger.annotations.Api;
@@ -40,9 +41,16 @@ public class MenuController {
 
     @Operation(summary = "메뉴 목록", description = "메뉴 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity getMenuList() {
+    public ResponseEntity<List<Menu>> getMenuList() {
         List<Menu> menuList = menuService.getMenuList();
         return new ResponseEntity<>(menuList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "메뉴 상세 정보", description = "메뉴 상세 정보를 조회합니다.")
+    @GetMapping("/{menuCode}")
+    public ResponseEntity<MenuDetail> getMenuDetail(@PathVariable("menuCode") String menuCode) {
+        MenuDetail menuDetail = menuService.getMenuDetail(menuCode);
+        return new ResponseEntity<>(menuDetail, HttpStatus.OK);
     }
 
     @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다.")
