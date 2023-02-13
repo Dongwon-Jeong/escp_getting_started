@@ -21,9 +21,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     private final MenuDAO menuDAO;
     private final MemberDAO memberDAO;
-    private final OptionGroupDAO optionGroupDAO;
-    private final OptionValueDAO optionValueDAO;
-    private final CellDAO cellDAO;
     @Override
     public int registerOrder(RegisterOrderRq registerOrderRq) {
         String phone = registerOrderRq.getPhone();
@@ -35,27 +32,14 @@ public class OrderServiceImpl implements OrderService {
         JSONObject menu = menuDAO.getMenuByCode(menuCode);
         String menuId = (String) menu.get("_uuid");
         List<Integer> optionValueList = registerOrderRq.getOptionValueList();
-        List<String> optionValueIdList = new ArrayList<>();
 
-        JSONArray optionGroupIdList = (JSONArray) menu.get("optionGroupIdList");
-        for (Object optionGroupId : optionGroupIdList) {
-            JSONObject optionGroup = optionGroupDAO.getOptionGroupById((String) optionGroupId);
-            JSONArray valueIdList = (JSONArray) optionGroup.get("optionValueIdList");
-            for (Object valueId : valueIdList) {
-                JSONObject optionValueObj = optionValueDAO.getOptionValueById((String) valueId);
-                long code = (long) optionValueObj.get("code");
-                for (int optionValue : optionValueList) {
-                    if (optionValue == code) {
-                        optionValueIdList.add((String) valueId);
-                        break;
-                    }
-                }
-            }
-        }
 
         boolean setDefault = registerOrderRq.getSetDefault();
+        if (setDefault) {
+            // TODO: 기본 옵션 처리
+        }
 
-        ResponseData postResponse = orderDAO.registerOrder(memberId, cellId, menuId, optionValueIdList, setDefault);
+        ResponseData postResponse = orderDAO.registerOrder(memberId, cellId, menuId, optionValueList);
 
         return postResponse.getStatusCode();
     }

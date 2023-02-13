@@ -21,6 +21,6 @@ public class RegisterMenuRq {
     @NotNull
     Integer unitPrice;
 
-    @Schema(description = "옵션 그룹 uuid 리스트")
-    List<String> optionGroupIdList;
+    @Schema(description = "0: COFFEE, 1: NON-COFFEE, 2: ADE & JUICE, 3: FLATCCINO, 4: BOTTLE, 5: SNACK, 6: S/W")
+    Integer type;
 }
