@@ -10,5 +10,5 @@ public interface MemberDAO {
     String getIdByPhone(String phone);
     String getCellIdByPhone(String phone);
     String getNameByPhone(String phone);
-    JSONArray getMembers();
+    JSONArray getMemberList();
 }

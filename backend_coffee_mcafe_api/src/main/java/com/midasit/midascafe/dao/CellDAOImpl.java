@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
@@ -28,7 +29,7 @@ public class CellDAOImpl implements CellDAO{
     @Override
     public List<String> findAll() {
         List<String> cellList = new ArrayList<>();
-        JSONArray items = getCells();
+        JSONArray items = getCellList();
         for (Object item : items) {
             cellList.add((String) ((JSONObject) item).get("name"));
         }
@@ -39,11 +40,11 @@ public class CellDAOImpl implements CellDAO{
 
     @Override
     public JSONArray findMemberByCell(String cell) {
-        JSONArray items = getCells();
-        for (Object item : items) {
-            if (cell.equals(((JSONObject) item).get("name"))) {
+        JSONArray cellList = getCellList();
+        for (Object cellObj : cellList) {
+            if (cell.equals(((JSONObject) cellObj).get("name"))) {
                 JSONArray memberArray = new JSONArray();
-                JSONArray memberIdArray = (JSONArray) ((JSONObject) item).get("member");
+                JSONArray memberIdArray = (JSONArray) ((JSONObject) cellObj).get("member");
                 if (memberIdArray != null) {
                     for (Object memberId : memberIdArray) {
                         JSONObject memberJson = memberDAO.getMemberById((String) memberId);
@@ -122,7 +123,7 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public JSONArray getCells() {
+    public JSONArray getCellList() {
         return commonDAO.getItems(URL);
     }
 
@@ -138,27 +139,23 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public List<String> getOrderIdListByName(String cell) {
-        JSONArray cellArr = getCells();
-        for (Object cellObject : cellArr) {
-            String cellObjectName = (String) ((JSONObject) cellObject).get("name");
-            if (cellObjectName.equals(cell)) {
-                return (JSONArray) ((JSONObject) cellObject).get("order");
-            }
-        }
-        return null;
+    public List<String> getOrderIdListByName(String name) {
+        JSONArray cellList = getCellList();
+        JSONObject cell = (JSONObject) cellList.stream()
+                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
+                .findFirst()
+                .orElse(null);
+        return (cell != null) ? (JSONArray) cell.get("order") : null;
     }
 
     @Override
-    public String getCellIdByName(String cell) {
-        JSONArray cellArr = getCells();
-        for (Object cellObject : cellArr) {
-            String cellObjectName = (String) ((JSONObject) cellObject).get("name");
-            if (cellObjectName.equals(cell)) {
-                return (String) ((JSONObject) cellObject).get("_uuid");
-            }
-        }
-        return null;
+    public String getCellIdByName(String name) {
+        JSONArray cellList = getCellList();
+        JSONObject cell = (JSONObject) cellList.stream()
+                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
+                .findFirst()
+                .orElse(null);
+        return (cell != null) ? (String) cell.get("_uuid") : null;
     }
 
 }

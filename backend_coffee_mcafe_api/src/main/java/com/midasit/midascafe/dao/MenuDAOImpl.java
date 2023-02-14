@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
@@ -24,21 +25,8 @@ public class MenuDAOImpl implements MenuDAO{
         return commonDAO.postRequest(body, URL).getStatusCode();
     }
 
-
     @Override
     public JSONArray getMenuList() {
         return commonDAO.getItems(URL);
-    }
-
-    @Override
-    public JSONObject getMenuByCode(String code) {
-        JSONArray items = getMenuList();
-        for (Object item : items) {
-            String itemCode = (String) ((JSONObject) item).get("code");
-            if (itemCode.equals(code)) {
-                return (JSONObject) item;
-            }
-        }
-        return null;
     }
 }
