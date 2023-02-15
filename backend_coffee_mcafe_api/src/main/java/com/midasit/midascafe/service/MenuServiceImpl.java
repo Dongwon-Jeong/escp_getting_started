@@ -70,11 +70,12 @@ public class MenuServiceImpl implements MenuService{
             JSONArray optionValueJsonArray = (JSONArray) optionGroupJson.get("options");
             for (Object optionValueObj : optionValueJsonArray) {
                 JSONObject optionValueJson = (JSONObject) optionValueObj;
+                Boolean optionDefault = (Long) optionValueJson.get("option_default") == 1L;
                 optionValueList.add(OptionValue.builder()
                         .name((String) optionValueJson.get("option_name"))
                         .code((Long) optionValueJson.get("option_seq"))
                         .price((Long) optionValueJson.get("option_price"))
-                        .optionDefault((Long) optionValueJson.get("option_default"))
+                        .optionDefault(optionDefault)
                         .build());
             }
 
