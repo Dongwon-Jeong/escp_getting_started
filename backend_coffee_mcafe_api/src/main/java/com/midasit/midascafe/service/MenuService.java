@@ -10,6 +10,5 @@ public interface MenuService {
     int registerMenu(RegisterMenuRq registerMenuRq);
     int deleteMenu(int menu);
     List<Menu> getMenuList();
-
     MenuDetail getMenuDetail(String menuCode);
 }

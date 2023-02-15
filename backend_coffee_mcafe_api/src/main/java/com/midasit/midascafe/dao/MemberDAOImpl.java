@@ -6,8 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입

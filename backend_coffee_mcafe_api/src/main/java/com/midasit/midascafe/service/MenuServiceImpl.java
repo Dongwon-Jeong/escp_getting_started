@@ -7,8 +7,6 @@ import com.midasit.midascafe.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -94,16 +92,5 @@ public class MenuServiceImpl implements MenuService{
                 .stock((Long) menuItem.get("item_stock"))
                 .optionGroupList(optionGroupList)
                 .build();
-    }
-
-    public String extractUuid(ResponseData responseData) {
-        JSONParser parser = new JSONParser();
-        JSONObject responseJson;
-        try {
-            responseJson = (JSONObject) parser.parse(responseData.getResponseData());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return (String) ((JSONObject) (((JSONArray) responseJson.get("items")).get(0))).get("_uuid");
     }
 }
