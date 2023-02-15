@@ -6,7 +6,6 @@ import org.json.simple.JSONObject;
 import java.util.List;
 
 public interface MenuDAO {
-    int registerMenu(String name, String code, int unitPrice, List<String> optionGroupIdList);
+    int registerMenu(String name, String code, int unitPrice, int type);
     JSONArray getMenuList();
-    JSONObject getMenuByCode(String code);
 }
