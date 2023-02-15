@@ -9,7 +9,8 @@ public interface CellDAO {
     List<String> findAll();
     JSONArray findMemberByCell(String cell);
     int modifyCellName(String uuid, String name);
-    int addMember(String uuid, String member);
+    int addMember(String uuid, String memberId);
+    int deleteMember(String uuid, String memberId);
     int addOrder(String uuid, String order);
     int deleteOrder(String uuid, String order);
     int deleteOrder(String uuid);

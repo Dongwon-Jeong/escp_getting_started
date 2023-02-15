@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MemberService {
     int registerMember(RegisterMemberRq registerMemberRq);
-
+    int deleteMember(String phone);
 }

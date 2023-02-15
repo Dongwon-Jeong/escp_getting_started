@@ -11,4 +11,6 @@ public interface MemberDAO {
     String getCellIdByPhone(String phone);
     String getNameByPhone(String phone);
     JSONArray getMemberList();
+
+    int deleteMember(String uuid);
 }
