@@ -10,8 +10,7 @@ public interface CommonDAO {
     HttpURLConnection getConnection(String URL, String method);
     ResponseData postRequest(JSONArray body, String url);
     JSONArray getItems(String url);
-
     JSONObject getItem(String url);
-
+    int deleteItem(String url, String uuid);
     int getResponseCode(HttpURLConnection connection, String body);
 }

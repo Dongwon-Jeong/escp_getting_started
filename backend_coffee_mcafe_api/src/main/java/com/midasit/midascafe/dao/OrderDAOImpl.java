@@ -31,13 +31,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public int deleteOrder(String uuid) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("_uuid", uuid);
-        body.add(data);
-
-        HttpURLConnection connection = commonDAO.getConnection(URL, "DELETE");
-        return commonDAO.getResponseCode(connection, body.toString());
+        return commonDAO.deleteItem(URL, uuid);
     }
 
     @Override
