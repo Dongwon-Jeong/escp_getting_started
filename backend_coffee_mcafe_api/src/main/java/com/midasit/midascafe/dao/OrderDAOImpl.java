@@ -16,14 +16,13 @@ public class OrderDAOImpl implements OrderDAO {
     private final static String URL = "https://crudapi.co.uk/api/v1/order";
 
     @Override
-    public ResponseData registerOrder(String phone, String menuName, String menuCode, List<Long> options, Long price) {
+    public ResponseData registerOrder(String memberId, String cellId, String menuId, List<Integer> optionValueIdList) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
-        data.put("phone", phone);
-        data.put("menuName", menuName);
-        data.put("menuCode", menuCode);
-        data.put("options", options);
-        data.put("price", price);
+        data.put("memberId", memberId);
+        data.put("cellId", cellId);
+        data.put("menuId", menuId);
+        data.put("optionValueIdList", optionValueIdList);
         body.add(data);
         ResponseData postResponse = commonDAO.postRequest(body, URL);
         return postResponse;
@@ -31,13 +30,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public int deleteOrder(String uuid) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("_uuid", uuid);
-        body.add(data);
-
-        HttpURLConnection connection = commonDAO.getConnection(URL, "DELETE");
-        return commonDAO.getResponseCode(connection, body.toString());
+        return commonDAO.deleteItem(URL, uuid);
     }
 
     @Override

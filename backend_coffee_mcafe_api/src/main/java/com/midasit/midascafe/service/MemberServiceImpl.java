@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class MemberServiceImpl implements MemberService{
     private final MemberDAO memberDAO;
     private final CellDAO cellDAO;
+    private final OrderService orderService;
     @Override
     public int registerMember(RegisterMemberRq registerMemberRq) {
         String phone = registerMemberRq.getPhone();
@@ -23,7 +24,7 @@ public class MemberServiceImpl implements MemberService{
         String cell = registerMemberRq.getCell();
 
 
-        JSONArray items = memberDAO.getMembers();
+        JSONArray items = memberDAO.getMemberList();
         for (Object item : items) {
             String mPhone = (String) ((JSONObject) item).get("phone");
             if(mPhone.equals(phone)) {
@@ -32,7 +33,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         String cellId = null;
-        items = cellDAO.getCells();
+        items = cellDAO.getCellList();
         for (Object item : items) {
             String cellName = (String) ((JSONObject) item).get("name");
             if (cellName.equals(cell)) {
@@ -56,4 +57,19 @@ public class MemberServiceImpl implements MemberService{
 
         return postResponse.getStatusCode();
     }
+
+    @Override
+    public int deleteMember(String phone) {
+        String memberId = memberDAO.getIdByPhone(phone);
+        if (memberId == null) {
+            return 404;
+        }
+        orderService.deleteOrder(phone);
+        JSONObject member = memberDAO.getMemberById(memberId);
+        String cellId = (String) member.get("cell");
+        cellDAO.deleteMember(cellId, memberId);
+        return memberDAO.deleteMember(memberId);
+    }
+
+
 }

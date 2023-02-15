@@ -28,7 +28,7 @@ public class CellDAOImpl implements CellDAO{
     @Override
     public List<String> findAll() {
         List<String> cellList = new ArrayList<>();
-        JSONArray items = getCells();
+        JSONArray items = getCellList();
         for (Object item : items) {
             cellList.add((String) ((JSONObject) item).get("name"));
         }
@@ -39,11 +39,11 @@ public class CellDAOImpl implements CellDAO{
 
     @Override
     public JSONArray findMemberByCell(String cell) {
-        JSONArray items = getCells();
-        for (Object item : items) {
-            if (cell.equals(((JSONObject) item).get("name"))) {
+        JSONArray cellList = getCellList();
+        for (Object cellObj : cellList) {
+            if (cell.equals(((JSONObject) cellObj).get("name"))) {
                 JSONArray memberArray = new JSONArray();
-                JSONArray memberIdArray = (JSONArray) ((JSONObject) item).get("member");
+                JSONArray memberIdArray = (JSONArray) ((JSONObject) cellObj).get("member");
                 if (memberIdArray != null) {
                     for (Object memberId : memberIdArray) {
                         JSONObject memberJson = memberDAO.getMemberById((String) memberId);
@@ -75,13 +75,26 @@ public class CellDAOImpl implements CellDAO{
 
 
     @Override
-    public int addMember(String uuid, String member) {
+    public int addMember(String uuid, String memberId) {
         JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
         JSONArray memberArr = (JSONArray) cell.get("member");
         if (memberArr == null) {
             memberArr = new JSONArray();
         }
-        memberArr.add(member);
+        memberArr.add(memberId);
+        cell.put("member", memberArr);
+        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
+        return commonDAO.getResponseCode(connection, cell.toString());
+    }
+
+    @Override
+    public int deleteMember(String uuid, String memberId) {
+        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
+        JSONArray memberArr = (JSONArray) cell.get("member");
+        if (memberArr == null) {
+            memberArr = new JSONArray();
+        }
+        memberArr.remove(memberId);
         cell.put("member", memberArr);
         HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
         return commonDAO.getResponseCode(connection, cell.toString());
@@ -122,43 +135,33 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public JSONArray getCells() {
+    public JSONArray getCellList() {
         return commonDAO.getItems(URL);
     }
 
     @Override
     public int deleteCell(String uuid) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("_uuid", uuid);
-        body.add(data);
-
-        HttpURLConnection connection = commonDAO.getConnection(URL, "DELETE");
-        return commonDAO.getResponseCode(connection, body.toString());
+        return commonDAO.deleteItem(URL, uuid);
     }
 
     @Override
-    public List<String> getOrderIdListByName(String cell) {
-        JSONArray cellArr = getCells();
-        for (Object cellObject : cellArr) {
-            String cellObjectName = (String) ((JSONObject) cellObject).get("name");
-            if (cellObjectName.equals(cell)) {
-                return (JSONArray) ((JSONObject) cellObject).get("order");
-            }
-        }
-        return null;
+    public List<String> getOrderIdListByName(String name) {
+        JSONArray cellList = getCellList();
+        JSONObject cell = (JSONObject) cellList.stream()
+                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
+                .findFirst()
+                .orElse(null);
+        return (cell != null) ? (JSONArray) cell.get("order") : null;
     }
 
     @Override
-    public String getCellIdByName(String cell) {
-        JSONArray cellArr = getCells();
-        for (Object cellObject : cellArr) {
-            String cellObjectName = (String) ((JSONObject) cellObject).get("name");
-            if (cellObjectName.equals(cell)) {
-                return (String) ((JSONObject) cellObject).get("_uuid");
-            }
-        }
-        return null;
+    public String getCellIdByName(String name) {
+        JSONArray cellList = getCellList();
+        JSONObject cell = (JSONObject) cellList.stream()
+                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
+                .findFirst()
+                .orElse(null);
+        return (cell != null) ? (String) cell.get("_uuid") : null;
     }
 
 }

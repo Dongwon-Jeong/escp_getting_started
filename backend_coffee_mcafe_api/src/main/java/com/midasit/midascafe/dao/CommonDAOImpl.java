@@ -6,7 +6,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -16,6 +18,20 @@ import java.net.URL;
 public class CommonDAOImpl implements CommonDAO{
     @Value("${database.api.key}")
     private String API_KEY;
+
+    private static WebClient webClient;
+
+    @Override
+    public WebClient getWebClient() {
+        if (webClient == null) {
+            webClient = WebClient.builder()
+                    .baseUrl("https://crudapi.co.uk/api/v1")
+                    .defaultHeader(HttpHeaders.ACCEPT, "*/*")
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, API_KEY)
+                    .build();
+        }
+        return webClient;
+    }
 
     @Override
     public HttpURLConnection getConnection(String URL, String method) {
@@ -116,6 +132,17 @@ public class CommonDAOImpl implements CommonDAO{
             return null;
         }
         return item;
+    }
+
+    @Override
+    public int deleteItem(String url, String uuid) {
+        JSONArray body = new JSONArray();
+        JSONObject data = new JSONObject();
+        data.put("_uuid", uuid);
+        body.add(data);
+
+        HttpURLConnection connection = getConnection(url, "DELETE");
+        return getResponseCode(connection, body.toString());
     }
 
     public int getResponseCode(HttpURLConnection connection, String data) {
