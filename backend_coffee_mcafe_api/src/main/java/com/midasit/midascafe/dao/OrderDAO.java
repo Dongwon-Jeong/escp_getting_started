@@ -9,6 +9,6 @@ import java.util.List;
 public interface OrderDAO {
     ResponseData registerOrder(String memberId, String cellId, String menuId, List<Integer> optionValueIdList);
     int deleteOrder(String uuid);
-    JSONArray getOrders();
+    JSONArray getOrderList();
     JSONObject getOrder(String uuid);
 }

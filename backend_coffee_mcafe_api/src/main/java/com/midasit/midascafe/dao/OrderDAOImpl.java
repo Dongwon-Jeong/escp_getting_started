@@ -6,7 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import java.net.HttpURLConnection;
 import java.util.List;
 
 @Repository
@@ -24,8 +23,7 @@ public class OrderDAOImpl implements OrderDAO {
         data.put("menuId", menuId);
         data.put("optionValueIdList", optionValueIdList);
         body.add(data);
-        ResponseData postResponse = commonDAO.postRequest(body, URL);
-        return postResponse;
+        return commonDAO.postRequest(body, URL);
     }
 
     @Override
@@ -34,7 +32,7 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public JSONArray getOrders() {
+    public JSONArray getOrderList() {
         return commonDAO.getItems(URL);
     }
 

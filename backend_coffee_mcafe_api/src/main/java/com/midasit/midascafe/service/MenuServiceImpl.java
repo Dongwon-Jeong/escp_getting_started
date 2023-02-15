@@ -10,7 +10,9 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -63,20 +65,24 @@ public class MenuServiceImpl implements MenuService{
         List<OptionGroup> optionGroupList = new ArrayList<>();
 
         JSONArray optionGroupJsonArray = (JSONArray) menuItem.get("option_group");
+        Map<Long, OptionValue> optionValueMap = new HashMap<>();
         for (Object optionGroupObj : optionGroupJsonArray) {
             JSONObject optionGroupJson = (JSONObject) optionGroupObj;
             List<OptionValue> optionValueList = new ArrayList<>();
+
 
             JSONArray optionValueJsonArray = (JSONArray) optionGroupJson.get("options");
             for (Object optionValueObj : optionValueJsonArray) {
                 JSONObject optionValueJson = (JSONObject) optionValueObj;
                 Boolean optionDefault = (Long) optionValueJson.get("option_default") == 1L;
-                optionValueList.add(OptionValue.builder()
+                OptionValue optionValue = OptionValue.builder()
                         .name((String) optionValueJson.get("option_name"))
                         .code((Long) optionValueJson.get("option_seq"))
                         .price((Long) optionValueJson.get("option_price"))
                         .optionDefault(optionDefault)
-                        .build());
+                        .build();
+                optionValueList.add(optionValue);
+                optionValueMap.put(optionValue.getCode(), optionValue);
             }
 
             optionGroupList.add(OptionGroup.builder()
@@ -92,6 +98,7 @@ public class MenuServiceImpl implements MenuService{
                 .unitPrice((Long) menuItem.get("item_price"))
                 .stock((Long) menuItem.get("item_stock"))
                 .optionGroupList(optionGroupList)
+                .optionValueMap(optionValueMap)
                 .build();
     }
 }
