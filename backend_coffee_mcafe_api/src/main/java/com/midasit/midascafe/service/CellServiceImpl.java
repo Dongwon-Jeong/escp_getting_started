@@ -37,7 +37,7 @@ public class CellServiceImpl implements CellService{
 
     @Override
     public int modifyCellName(String name, ModifyCellNameRq modifyCellNameRq) {
-        JSONArray items = cellDAO.getCells();
+        JSONArray items = cellDAO.getCellList();
         String uuid = null;
         boolean duplicate = false;
         for (Object item : items) {
@@ -57,7 +57,7 @@ public class CellServiceImpl implements CellService{
 
     @Override
     public int deleteCell(String name) {
-        JSONArray items = cellDAO.getCells();
+        JSONArray items = cellDAO.getCellList();
         String uuid = null;
         boolean hasMember = false;
         for (Object item : items) {

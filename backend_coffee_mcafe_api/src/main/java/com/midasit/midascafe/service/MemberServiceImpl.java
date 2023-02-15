@@ -24,7 +24,7 @@ public class MemberServiceImpl implements MemberService{
         String cell = registerMemberRq.getCell();
 
 
-        JSONArray items = memberDAO.getMembers();
+        JSONArray items = memberDAO.getMemberList();
         for (Object item : items) {
             String mPhone = (String) ((JSONObject) item).get("phone");
             if(mPhone.equals(phone)) {
@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         String cellId = null;
-        items = cellDAO.getCells();
+        items = cellDAO.getCellList();
         for (Object item : items) {
             String cellName = (String) ((JSONObject) item).get("name");
             if (cellName.equals(cell)) {

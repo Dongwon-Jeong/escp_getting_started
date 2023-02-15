@@ -6,7 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import java.net.HttpURLConnection;
 
 
 @Repository
@@ -36,42 +35,29 @@ public class MemberDAOImpl implements MemberDAO{
 
     @Override
     public String getIdByPhone(String phone) {
-        JSONArray items = getMembers();
-        for (Object item : items) {
-            String itemPhone = (String) ((JSONObject) item).get("phone");
-            if (itemPhone.equals(phone)) {
-                return (String) ((JSONObject) item).get("_uuid");
-            }
-        }
-        return null;
+        return getDataByPhone(phone, "_uuid");
     }
 
     @Override
     public String getCellIdByPhone(String phone) {
-        JSONArray items = getMembers();
-        for (Object item : items) {
-            String itemPhone = (String) ((JSONObject) item).get("phone");
-            if (itemPhone.equals(phone)) {
-                return (String) ((JSONObject) item).get("cell");
-            }
-        }
-        return null;
+        return getDataByPhone(phone, "cell");
     }
 
     @Override
     public String getNameByPhone(String phone) {
-        JSONArray items = getMembers();
-        for (Object item : items) {
-            String itemPhone = (String) ((JSONObject) item).get("phone");
-            if (itemPhone.equals(phone)) {
-                return (String) ((JSONObject) item).get("name");
-            }
-        }
-        return null;
+        return getDataByPhone(phone, "name");
     }
 
+    private String getDataByPhone(String phone, String data) {
+        JSONArray memberList = getMemberList();
+        JSONObject member = (JSONObject) memberList.stream()
+                .filter(memberObj -> ((JSONObject) memberObj).get("phone").equals(phone))
+                .findFirst()
+                .orElse(null);
+        return (member != null) ? (String) member.get(data) : null;
+    }
     @Override
-    public JSONArray getMembers() {
+    public JSONArray getMemberList() {
         return commonDAO.getItems(URL);
     }
 

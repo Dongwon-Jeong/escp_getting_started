@@ -11,4 +11,5 @@ public class OptionValue {
     String name;
     Long code;
     Long price;
+    Long optionDefault;
 }
