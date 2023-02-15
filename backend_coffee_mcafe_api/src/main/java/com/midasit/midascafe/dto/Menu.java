@@ -13,5 +13,5 @@ public class Menu {
     String name;
     String code;
     Long unitPrice;
-    Long stock;
+    Long type;
 }
