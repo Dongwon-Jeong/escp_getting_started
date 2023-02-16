@@ -145,16 +145,6 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public List<String> getOrderIdListByName(String name) {
-        JSONArray cellList = getCellList();
-        JSONObject cell = (JSONObject) cellList.stream()
-                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
-                .findFirst()
-                .orElse(null);
-        return (cell != null) ? (JSONArray) cell.get("order") : null;
-    }
-
-    @Override
     public String getCellIdByName(String name) {
         JSONArray cellList = getCellList();
         JSONObject cell = (JSONObject) cellList.stream()

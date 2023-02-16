@@ -51,8 +51,8 @@ public class MenuController {
     }
 
     @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다.")
-    @DeleteMapping("/{code}")
-    public ResponseEntity<String> deleteMenu(@PathVariable(value = "code") int menu) {
+    @DeleteMapping("/{menuCode}")
+    public ResponseEntity<String> deleteMenu(@PathVariable(value = "menuCode") int menu) {
         int statusCode = 0;
 
         if (statusCode == 200) {

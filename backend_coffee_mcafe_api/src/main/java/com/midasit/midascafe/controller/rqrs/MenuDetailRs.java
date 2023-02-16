@@ -3,10 +3,12 @@ package com.midasit.midascafe.controller.rqrs;
 import com.midasit.midascafe.dto.MenuDetail;
 import com.midasit.midascafe.dto.OptionGroup;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
 @Builder
+@Getter
 public class MenuDetailRs {
     String name;
     String code;

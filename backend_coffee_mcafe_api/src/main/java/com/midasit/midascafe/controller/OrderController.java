@@ -52,6 +52,6 @@ public class OrderController {
     @Operation(summary = "셀의 주문 목록", description = "해당 셀의 주문 목록을 조회합니다.")
     @GetMapping(value = "/{cell}")
     public ResponseEntity<List<Order>> getOrderList(@PathVariable(value = "cell") String cellName) {
-        return ResponseEntity.ok(orderService.getOrderList(cellName));
+        return ResponseEntity.ok(orderService.getOrderListByPhone(cellName));
     }
 }

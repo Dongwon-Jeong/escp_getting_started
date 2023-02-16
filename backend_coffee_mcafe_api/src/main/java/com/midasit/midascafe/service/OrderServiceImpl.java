@@ -73,11 +73,41 @@ public class OrderServiceImpl implements OrderService {
         for (Object orderObj : orderListJson) {
             JSONObject orderJsonObj = (JSONObject) orderObj;
             if (orderJsonObj.get("cellId").equals(cellId)) {
-                MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuId"));
+                MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
                 List<String> optionNameList = new ArrayList<>();
-                JSONArray optionValueIdList = (JSONArray) orderJsonObj.get("optionValueIdList");
-                for (Object optionValueId : optionValueIdList) {
-                    optionNameList.add(menuDetail.getOptionValueMap().get(optionValueId).getName());
+                JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
+                for (Object optionValue : optionValueList) {
+                    optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName());
+                }
+                JSONObject member = (JSONObject) memberList.stream()
+                        .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))
+                        .findFirst()
+                        .orElse(null);
+                String name = (member != null) ? (String) member.get("name") : null;
+                orderList.add(Order.builder()
+                        .name(name)
+                        .menuName(menuDetail.getName())
+                        .optionNameList(optionNameList)
+                        .build());
+            }
+        }
+        return orderList;
+    }
+
+    // 임시 메서드 고도화 때 사라질 예정
+    public List<Order> getOrderListByPhone(String phone) {
+        String cellId = memberDAO.getCellIdByPhone(phone);
+        JSONArray orderListJson = orderDAO.getOrderList();
+        JSONArray memberList = memberDAO.getMemberList();
+        List<Order> orderList = new ArrayList<>();
+        for (Object orderObj : orderListJson) {
+            JSONObject orderJsonObj = (JSONObject) orderObj;
+            if (orderJsonObj.get("cellId").equals(cellId)) {
+                MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
+                List<String> optionNameList = new ArrayList<>();
+                JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
+                for (Object optionValue : optionValueList) {
+                    optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName());
                 }
                 JSONObject member = (JSONObject) memberList.stream()
                         .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))

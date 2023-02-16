@@ -63,23 +63,21 @@ public class MenuServiceImpl implements MenuService{
         String url = String.format("https://uchef.co.kr/webApp.action?mode=5170&item_code=%s&shop_member_seq=1859", menuCode);
         JSONObject menuItem = (JSONObject) ((JSONArray) ((JSONObject) (commonDAO.getItem(url).get("searchResult"))).get("list")).get(0);
         List<OptionGroup> optionGroupList = new ArrayList<>();
-
         JSONArray optionGroupJsonArray = (JSONArray) menuItem.get("option_group");
         Map<Long, OptionValue> optionValueMap = new HashMap<>();
         for (Object optionGroupObj : optionGroupJsonArray) {
             JSONObject optionGroupJson = (JSONObject) optionGroupObj;
             List<OptionValue> optionValueList = new ArrayList<>();
 
-
             JSONArray optionValueJsonArray = (JSONArray) optionGroupJson.get("options");
             for (Object optionValueObj : optionValueJsonArray) {
                 JSONObject optionValueJson = (JSONObject) optionValueObj;
-                Boolean optionDefault = (Long) optionValueJson.get("option_default") == 1L;
+                Boolean isOptionDefault = ((Long) optionValueJson.get("option_default")) == 1L;
                 OptionValue optionValue = OptionValue.builder()
                         .name((String) optionValueJson.get("option_name"))
                         .code((Long) optionValueJson.get("option_seq"))
                         .price((Long) optionValueJson.get("option_price"))
-                        .optionDefault(optionDefault)
+                        .isOptionDefault(isOptionDefault)
                         .build();
                 optionValueList.add(optionValue);
                 optionValueMap.put(optionValue.getCode(), optionValue);
