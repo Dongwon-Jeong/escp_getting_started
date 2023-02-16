@@ -11,5 +11,5 @@ public class OptionValue {
     String name;
     Long code;
     Long price;
-    Boolean optionDefault;
+    Boolean isOptionDefault;
 }

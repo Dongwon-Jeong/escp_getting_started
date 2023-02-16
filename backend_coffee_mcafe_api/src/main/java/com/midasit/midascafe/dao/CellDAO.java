@@ -17,7 +17,5 @@ public interface CellDAO {
     JSONArray getCellList();
     int deleteCell(String uuid);
 
-    List<String> getOrderIdListByName(String cell);
-
     String getCellIdByName(String cell);
 }

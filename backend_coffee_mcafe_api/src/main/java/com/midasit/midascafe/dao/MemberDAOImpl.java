@@ -6,8 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
-
-
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
 public class MemberDAOImpl implements MemberDAO{
@@ -22,8 +20,7 @@ public class MemberDAOImpl implements MemberDAO{
         data.put("name", name);
         data.put("cell", cellId);
         body.add(data);
-        ResponseData postResponse = commonDAO.postRequest(body, URL);
-        return postResponse;
+        return commonDAO.postRequest(body, URL);
     }
 
     @Override

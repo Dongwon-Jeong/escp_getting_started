@@ -5,20 +5,16 @@ import com.midasit.midascafe.dao.CellDAO;
 import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MemberDAO;
 import com.midasit.midascafe.dao.OrderDAO;
+import com.midasit.midascafe.dto.MenuDetail;
 import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URLEncoder;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +24,9 @@ public class PayServiceImpl implements PayService {
     private final CellDAO cellDAO;
     private final OrderDAO orderDAO;
     private final CommonDAO commonDAO;
+    private final MenuService menuService;
+    Map<String, String> menuCodeToName = new HashMap<>();
+    Map<Integer, Long> optionCodeToPrice = new HashMap<>();
 
     @Override
     public ResponseData payOrder(PayOrderRq payOrderRq) {
@@ -41,8 +40,15 @@ public class PayServiceImpl implements PayService {
                     .build();
         }
         String cellId = cellDAO.getCellIdByName(cell);
-        List<String> cellOrderIdList = cellDAO.getOrderIdListByName(cell);
-        if (cellOrderIdList == null || cellOrderIdList.size() == 0) {
+        JSONArray orderList = orderDAO.getOrderList();
+        List<String> cellOrderIdList = new ArrayList<>();
+        for (Object orderObj : orderList) {
+            JSONObject orderJsonObj = (JSONObject) orderObj;
+            if (orderJsonObj.get("cellId").equals(cellId)) {
+                cellOrderIdList.add((String) orderJsonObj.get("_uuid"));
+            }
+        }
+        if (cellOrderIdList.size() == 0) {
             return ResponseData.builder()
                     .statusCode(404)
                     .responseData("해당 주문을 찾을 수 없습니다.")
@@ -51,30 +57,36 @@ public class PayServiceImpl implements PayService {
         long totalPrice = 0L;
         StringBuilder orderString = new StringBuilder("[");
 
-        JSONArray orderList = new JSONArray();
+        JSONArray payOrderList = new JSONArray();
         for (String orderId : cellOrderIdList) {
             JSONObject cellOrderObject = orderDAO.getOrder(orderId);
-            String menuName = (String) cellOrderObject.get("menuName");
             String menuCode = (String) cellOrderObject.get("menuCode");
             JSONArray optionList = (JSONArray) cellOrderObject.get("options");
             boolean hasSameOrder = false;
-            for (int idx = 0; idx < orderList.size(); idx++) {
-                JSONObject orderObject = (JSONObject) orderList.get(idx);
-                if (menuName.equals(orderObject.get("menuName")) && menuCode.equals(orderObject.get("menuCode")) &&
-                        new HashSet<> (optionList).equals(new HashSet<> ((JSONArray)orderObject.get("options")))) {
-                    orderObject.put("qty", (Integer) orderObject.get("qty") + 1);
+            for (int idx = 0; idx < payOrderList.size(); idx++) {
+                JSONObject payOrderObject = (JSONObject) payOrderList.get(idx);
+                if (menuCode.equals(payOrderObject.get("menuCode")) &&
+                        new HashSet<> (optionList).equals(new HashSet<> ((JSONArray)payOrderObject.get("options")))) {
+                    payOrderObject.put("qty", (Integer) payOrderObject.get("qty") + 1);
                     hasSameOrder = true;
                     break;
                 }
             }
             if(hasSameOrder) { continue; }
             cellOrderObject.put("qty", 1);
-            orderList.add(cellOrderObject);
+            payOrderList.add(cellOrderObject);
         }
 
-        for (Object orderObject : orderList) {
-            String menuName = (String) ((JSONObject) orderObject).get("menuName");
+        for (Object orderObject : payOrderList) {
             String menuCode = (String) ((JSONObject) orderObject).get("menuCode");
+            String menuName;
+            if (menuCodeToName.containsKey(menuCode)) {
+                menuName = menuCodeToName.get(menuCode);
+            } else {
+                MenuDetail menuDetail = menuService.getMenuDetail(menuCode);
+                menuName = menuDetail.getName();
+                menuCodeToName.put(menuCode, menuName);
+            }
             JSONArray optionList = (JSONArray) ((JSONObject) orderObject).get("options");
             JSONArray optionProcessed = new JSONArray();
             for (int idx = 0; idx < optionList.size(); idx++) {
@@ -118,32 +130,33 @@ public class PayServiceImpl implements PayService {
             throw new RuntimeException(e);
         }
         System.out.println(URL);
-        HttpURLConnection connection = commonDAO.getConnection(URL.toString(), "GET");
-        StringBuilder responseData = new StringBuilder();
-        int statusCode = 200;
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            while ((inputLine = br.readLine()) != null) {
-                responseData.append(inputLine);
-            }
-            statusCode = connection.getResponseCode();
-            connection.disconnect();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (statusCode == 200) {
-            cellDAO.deleteOrder(cellId);
-            // loop를 사용하지 않고 한 번에 지우는 작업 해야함
-            for (String cellOrderId : cellOrderIdList) {
-                System.out.println(cellOrderId);
-                orderDAO.deleteOrder(cellOrderId);
-            }
-        }
-
-        return ResponseData.builder()
-                .statusCode(statusCode)
-                .responseData(responseData.toString())
-                .build();
+//        HttpURLConnection connection = commonDAO.getConnection(URL.toString(), "GET");
+//        StringBuilder responseData = new StringBuilder();
+//        int statusCode = 200;
+//        try {
+//            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            String inputLine;
+//            while ((inputLine = br.readLine()) != null) {
+//                responseData.append(inputLine);
+//            }
+//            statusCode = connection.getResponseCode();
+//            connection.disconnect();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        if (statusCode == 200) {
+//            cellDAO.deleteOrder(cellId);
+//            // loop를 사용하지 않고 한 번에 지우는 작업 해야함
+//            for (String cellOrderId : cellOrderIdList) {
+//                System.out.println(cellOrderId);
+//                orderDAO.deleteOrder(cellOrderId);
+//            }
+//        }
+//
+//        return ResponseData.builder()
+//                .statusCode(statusCode)
+//                .responseData(responseData.toString())
+//                .build();
+        return null;
     }
 }
