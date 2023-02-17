@@ -1,6 +1,8 @@
 package com.midasit.midascafe.controller;
 
+import com.midasit.midascafe.controller.rqrs.PayOrderRq;
 import com.midasit.midascafe.dao.MenuDAO;
+import com.midasit.midascafe.dto.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +10,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -25,7 +30,7 @@ public class RootController {
     private final MenuDAO menuDAO;
     @Operation(summary = "졸음 방지용", description = "서버 졸음 방지")
     @GetMapping("/caffeine")
-    public ResponseEntity caffeine() {
+    public ResponseEntity<Void> caffeine() {
         return ResponseEntity.ok(null);
     }
 
@@ -33,7 +38,7 @@ public class RootController {
     // 메뉴 추가를 위한 임시 메서드
     @Operation(summary = "메뉴 추가를 위한 임시 메서드", description = "메뉴 추가를 위한 임시 메서드")
     @PostMapping("/menu/database/init")
-    public ResponseEntity initDb() throws IOException, ParseException {
+    public ResponseEntity<Void> initDb() throws IOException, ParseException {
         //ClassPathResource initDbResource = new ClassPathResource("init_db.json");
         JSONParser parser = new JSONParser();
         Reader reader;
@@ -51,5 +56,11 @@ public class RootController {
             }
         }
         return ResponseEntity.ok(null);
+    }
+
+    @Operation(summary = "음료 주문", description = "주문을 취합하여 음료를 주문합니다.")
+    @PostMapping("/fake-pay")
+    public ResponseEntity<String> payOrder(@RequestBody @Valid PayOrderRq payOrderRq) {
+        return new ResponseEntity<>("{주문 번호}", HttpStatus.OK);
     }
 }

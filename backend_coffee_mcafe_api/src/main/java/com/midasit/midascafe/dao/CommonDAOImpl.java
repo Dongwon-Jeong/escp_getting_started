@@ -145,6 +145,12 @@ public class CommonDAOImpl implements CommonDAO{
         return getResponseCode(connection, body.toString());
     }
 
+    @Override
+    public int deleteItems(String url, JSONArray orderJsonArray) {
+        HttpURLConnection connection = getConnection(url, "DELETE");
+        return getResponseCode(connection, orderJsonArray.toString());
+    }
+
     public int getResponseCode(HttpURLConnection connection, String data) {
         int responseCode;
         try {

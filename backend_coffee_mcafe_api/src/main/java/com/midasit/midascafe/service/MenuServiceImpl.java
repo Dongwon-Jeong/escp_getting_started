@@ -19,6 +19,8 @@ import java.util.Map;
 public class MenuServiceImpl implements MenuService{
     private final MenuDAO menuDAO;
     private final CommonDAO commonDAO;
+    private Map<String, String> menuCodeToName = new HashMap<>();
+    private Map<Long, Long> optionCodeToPrice = new HashMap<>();
     @Override
     public int registerMenu(RegisterMenuRq registerMenuRq) {
         String name = registerMenuRq.getName();
@@ -98,5 +100,41 @@ public class MenuServiceImpl implements MenuService{
                 .optionGroupList(optionGroupList)
                 .optionValueMap(optionValueMap)
                 .build();
+    }
+
+    @Override
+    public String getMenuNameByMenuCode (String menuCode) {
+        if (menuCodeToName.containsKey(menuCode)) {
+            return menuCodeToName.get(menuCode);
+        } else {
+            MenuDetail menuDetail = getMenuDetail(menuCode);
+            String menuName = menuDetail.getName();
+            menuCodeToName.put(menuCode, menuName);
+            List<OptionGroup> optionGroupList = menuDetail.getOptionGroupList();
+            for (OptionGroup optionGroup : optionGroupList) {
+                List<OptionValue> optionValueList = optionGroup.getOptionValueList();
+                for (OptionValue optionValue : optionValueList) {
+                    optionCodeToPrice.put(optionValue.getCode(), optionValue.getPrice());
+                }
+            }
+            return menuName;
+        }
+    }
+
+    @Override
+    public Long getOptionPriceByOptionCode (Long optionCode, String menuCode) {
+        if (!optionCodeToPrice.containsKey(optionCode)) {
+            MenuDetail menuDetail = getMenuDetail(menuCode);
+            String menuName = menuDetail.getName();
+            menuCodeToName.put(menuCode, menuName);
+            List<OptionGroup> optionGroupList = menuDetail.getOptionGroupList();
+            for (OptionGroup optionGroup : optionGroupList) {
+                List<OptionValue> optionValueList = optionGroup.getOptionValueList();
+                for (OptionValue optionValue : optionValueList) {
+                    optionCodeToPrice.put(optionValue.getCode(), optionValue.getPrice());
+                }
+            }
+        }
+        return optionCodeToPrice.get(optionCode);
     }
 }
