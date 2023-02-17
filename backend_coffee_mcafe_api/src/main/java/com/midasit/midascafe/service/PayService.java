@@ -5,4 +5,6 @@ import com.midasit.midascafe.dto.ResponseData;
 
 public interface PayService {
     ResponseData payOrder(PayOrderRq payOrderRq);
+
+    ResponseData fakePay(PayOrderRq payOrderRq);
 }
