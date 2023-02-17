@@ -50,9 +50,9 @@ jacoco {
 
 jacocoTestReport {
     reports {
-        xml.enabled true // sonarqube 분석에 필요한 xml파일만 생성
-        csv.enabled false
-        html.enabled false
+        xml.required true // sonarqube 분석에 필요한 xml파일만 생성
+        csv.required false
+        html.required false
     }
 
 }
