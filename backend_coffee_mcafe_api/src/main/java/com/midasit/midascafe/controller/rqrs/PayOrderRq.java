@@ -11,7 +11,7 @@ public class PayOrderRq {
     @NotBlank
     String phone;
 
-    @Schema(description = "주문할 셀의 이름")
-    @NotBlank
-    String cell;
+//    @Schema(description = "주문할 셀의 이름")
+//    @NotBlank
+//    String cell;
 }

@@ -11,4 +11,8 @@ public interface MenuService {
     int deleteMenu(int menu);
     List<Menu> getMenuList();
     MenuDetail getMenuDetail(String menuCode);
+
+    String getMenuNameByMenuCode(String menuCode);
+
+    Long getOptionPriceByOptionCode(Long optionCode, String menuCode);
 }

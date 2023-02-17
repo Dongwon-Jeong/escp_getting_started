@@ -27,8 +27,13 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public int deleteOrder(String uuid) {
-        return commonDAO.deleteItem(URL, uuid);
+    public int deleteOrder(JSONArray orderJsonArray) {
+        return commonDAO.deleteItems(URL, orderJsonArray);
+    }
+
+    @Override
+    public int deleteOrder(String orderId) {
+        return commonDAO.deleteItem(URL, orderId);
     }
 
     @Override
