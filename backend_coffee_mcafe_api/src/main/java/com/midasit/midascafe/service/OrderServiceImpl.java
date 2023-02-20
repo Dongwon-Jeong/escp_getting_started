@@ -66,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrderList(String cellName) {
+        // TODO:
         String cellId = cellDAO.getCellIdByName(cellName);
         JSONArray orderListJson = orderDAO.getOrderList();
         JSONArray memberList = memberDAO.getMemberList();
@@ -97,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
     // 임시 메서드 고도화 때 사라질 예정
     public List<Order> getOrderListByPhone(String phone) {
         String cellId = memberDAO.getCellIdByPhone(phone);
+        // Todo: phone이 존재 하지 않는 회원일 때 처리
         JSONArray orderListJson = orderDAO.getOrderList();
         JSONArray memberList = memberDAO.getMemberList();
         List<Order> orderList = new ArrayList<>();
