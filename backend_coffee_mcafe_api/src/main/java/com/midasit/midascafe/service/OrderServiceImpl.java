@@ -77,9 +77,7 @@ public class OrderServiceImpl implements OrderService {
                 MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
                 List<String> optionNameList = new ArrayList<>();
                 JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
-                for (Object optionValue : optionValueList) {
-                    optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName());
-                }
+                optionValueList.forEach(optionValue -> optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName()));
                 JSONObject member = (JSONObject) memberList.stream()
                         .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))
                         .findFirst()
@@ -108,9 +106,7 @@ public class OrderServiceImpl implements OrderService {
                 MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
                 List<String> optionNameList = new ArrayList<>();
                 JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
-                for (Object optionValue : optionValueList) {
-                    optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName());
-                }
+                optionValueList.forEach(optionValue -> optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName()));
                 JSONObject member = (JSONObject) memberList.stream()
                         .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))
                         .findFirst()
