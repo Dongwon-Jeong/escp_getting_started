@@ -17,15 +17,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
     private final MemberDAO memberDAO;
-    private final CellDAO cellDAO;
+    private final GroupDAO groupDAO;
     private final MenuService menuService;
     @Override
     public int registerOrder(RegisterOrderRq registerOrderRq) {
         String phone = registerOrderRq.getPhone();
         if (hasOrder(phone)) { return 409; }
         String memberId = memberDAO.getIdByPhone(phone);
-        String cellId = memberDAO.getCellIdByPhone(phone);
-        if(cellId == null) { return 404; }
+        String groupId = memberDAO.getGroupIdByPhone(phone);
+        if(groupId == null) { return 404; }
         String menuCode = registerOrderRq.getMenuCode();
         List<Integer> optionValueList = registerOrderRq.getOptionValueList();
 
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
             // TODO: 기본 옵션 처리
         }
 
-        ResponseData postResponse = orderDAO.registerOrder(memberId, cellId, menuCode, optionValueList);
+        ResponseData postResponse = orderDAO.registerOrder(memberId, groupId, menuCode, optionValueList);
 
         return postResponse.getStatusCode();
     }
@@ -65,15 +65,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getOrderList(String cellName) {
+    public List<Order> getOrderList(String groupName) {
         // TODO:
-        String cellId = cellDAO.getCellIdByName(cellName);
+        String groupId = groupDAO.getGroupIdByName(groupName);
         JSONArray orderListJson = orderDAO.getOrderList();
         JSONArray memberList = memberDAO.getMemberList();
         List<Order> orderList = new ArrayList<>();
         for (Object orderObj : orderListJson) {
             JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
+            if (orderJsonObj.get("groupId").equals(groupId)) {
                 MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
                 List<String> optionNameList = new ArrayList<>();
                 JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
@@ -95,14 +95,14 @@ public class OrderServiceImpl implements OrderService {
 
     // 임시 메서드 고도화 때 사라질 예정
     public List<Order> getOrderListByPhone(String phone) {
-        String cellId = memberDAO.getCellIdByPhone(phone);
+        String groupId = memberDAO.getGroupIdByPhone(phone);
         // Todo: phone이 존재 하지 않는 회원일 때 처리
         JSONArray orderListJson = orderDAO.getOrderList();
         JSONArray memberList = memberDAO.getMemberList();
         List<Order> orderList = new ArrayList<>();
         for (Object orderObj : orderListJson) {
             JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
+            if (orderJsonObj.get("groupId").equals(groupId)) {
                 MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
                 List<String> optionNameList = new ArrayList<>();
                 JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");

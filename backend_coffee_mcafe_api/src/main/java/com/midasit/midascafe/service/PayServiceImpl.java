@@ -1,7 +1,6 @@
 package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.PayOrderRq;
-import com.midasit.midascafe.dao.CellDAO;
 import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MemberDAO;
 import com.midasit.midascafe.dao.OrderDAO;
@@ -32,7 +31,7 @@ public class PayServiceImpl implements PayService {
     @Override
     public ResponseData payOrder(PayOrderRq payOrderRq) {
         String phone = payOrderRq.getPhone();
-        //String cellName = payOrderRq.getCell();
+        //String groupName = payOrderRq.getGroup();
         String name = memberDAO.getNameByPhone(phone);
         if (name == null) {
             return ResponseData.builder()
@@ -40,18 +39,18 @@ public class PayServiceImpl implements PayService {
                     .responseData("해당 사용자를 찾을 수 없습니다.")
                     .build();
         }
-        String cellId = memberDAO.getCellIdByPhone(phone);
-        //String cellId = cellDAO.getCellIdByName(cellName);
+        String groupId = memberDAO.getGroupIdByPhone(phone);
+        //String groupId = groupDAO.getGroupIdByName(groupName);
 
         JSONArray orderList = orderDAO.getOrderList();
-        List<String> cellOrderIdList = new ArrayList<>();
+        List<String> groupOrderIdList = new ArrayList<>();
         for (Object orderObj : orderList) {
             JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
-                cellOrderIdList.add((String) orderJsonObj.get("_uuid"));
+            if (orderJsonObj.get("groupId").equals(groupId)) {
+                groupOrderIdList.add((String) orderJsonObj.get("_uuid"));
             }
         }
-        if (cellOrderIdList.size() == 0) {
+        if (groupOrderIdList.size() == 0) {
             return ResponseData.builder()
                     .statusCode(404)
                     .responseData("해당 주문을 찾을 수 없습니다.")
@@ -61,10 +60,10 @@ public class PayServiceImpl implements PayService {
         StringBuilder orderString = new StringBuilder("[");
 
         JSONArray payOrderList = new JSONArray();
-        for (String orderId : cellOrderIdList) {
-            JSONObject cellOrderObject = orderDAO.getOrder(orderId);
-            String menuCode = (String) cellOrderObject.get("menuCode");
-            JSONArray optionList = (JSONArray) cellOrderObject.get("optionValueList");
+        for (String orderId : groupOrderIdList) {
+            JSONObject groupOrderObject = orderDAO.getOrder(orderId);
+            String menuCode = (String) groupOrderObject.get("menuCode");
+            JSONArray optionList = (JSONArray) groupOrderObject.get("optionValueList");
             boolean hasSameOrder = false;
             for (int idx = 0; idx < payOrderList.size(); idx++) {
                 JSONObject payOrderObject = (JSONObject) payOrderList.get(idx);
@@ -76,8 +75,8 @@ public class PayServiceImpl implements PayService {
                 }
             }
             if(hasSameOrder) { continue; }
-            cellOrderObject.put("qty", 1);
-            payOrderList.add(cellOrderObject);
+            groupOrderObject.put("qty", 1);
+            payOrderList.add(groupOrderObject);
         }
 
         for (Object orderObject : payOrderList) {
@@ -150,13 +149,13 @@ public class PayServiceImpl implements PayService {
             throw new RuntimeException(e);
         }
         if (statusCode == 200) {
-            JSONArray cellOrderIdJsonArray = new JSONArray();
-            for (String cellOrderId : cellOrderIdList) {
-                JSONObject cellOrderIdJsonObj = new JSONObject();
-                cellOrderIdJsonObj.put("_uuid", cellOrderId);
-                cellOrderIdJsonArray.add(cellOrderIdJsonObj);
+            JSONArray groupOrderIdJsonArray = new JSONArray();
+            for (String groupOrderId : groupOrderIdList) {
+                JSONObject groupOrderIdJsonObj = new JSONObject();
+                groupOrderIdJsonObj.put("_uuid", groupOrderId);
+                groupOrderIdJsonArray.add(groupOrderIdJsonObj);
             }
-            orderDAO.deleteOrder(cellOrderIdJsonArray);
+            orderDAO.deleteOrder(groupOrderIdJsonArray);
         }
         return ResponseData.builder()
                 .statusCode(statusCode)
@@ -167,7 +166,7 @@ public class PayServiceImpl implements PayService {
     @Override
     public ResponseData fakePay(PayOrderRq payOrderRq) {
         String phone = payOrderRq.getPhone();
-        //String cellName = payOrderRq.getCell();
+        //String groupName = payOrderRq.getGroup();
         String name = memberDAO.getNameByPhone(phone);
         if (name == null) {
             return ResponseData.builder()
@@ -175,18 +174,18 @@ public class PayServiceImpl implements PayService {
                     .responseData("해당 사용자를 찾을 수 없습니다.")
                     .build();
         }
-        String cellId = memberDAO.getCellIdByPhone(phone);
-        //String cellId = cellDAO.getCellIdByName(cellName);
+        String groupId = memberDAO.getGroupIdByPhone(phone);
+        //String groupId = groupDAO.getGroupIdByName(groupName);
 
         JSONArray orderList = orderDAO.getOrderList();
-        List<String> cellOrderIdList = new ArrayList<>();
+        List<String> groupOrderIdList = new ArrayList<>();
         for (Object orderObj : orderList) {
             JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
-                cellOrderIdList.add((String) orderJsonObj.get("_uuid"));
+            if (orderJsonObj.get("groupId").equals(groupId)) {
+                groupOrderIdList.add((String) orderJsonObj.get("_uuid"));
             }
         }
-        if (cellOrderIdList.size() == 0) {
+        if (groupOrderIdList.size() == 0) {
             return ResponseData.builder()
                     .statusCode(404)
                     .responseData("해당 주문을 찾을 수 없습니다.")
@@ -196,10 +195,10 @@ public class PayServiceImpl implements PayService {
         StringBuilder orderString = new StringBuilder("[");
 
         JSONArray payOrderList = new JSONArray();
-        for (String orderId : cellOrderIdList) {
-            JSONObject cellOrderObject = orderDAO.getOrder(orderId);
-            String menuCode = (String) cellOrderObject.get("menuCode");
-            JSONArray optionList = (JSONArray) cellOrderObject.get("optionValueList");
+        for (String orderId : groupOrderIdList) {
+            JSONObject groupOrderObject = orderDAO.getOrder(orderId);
+            String menuCode = (String) groupOrderObject.get("menuCode");
+            JSONArray optionList = (JSONArray) groupOrderObject.get("optionValueList");
             boolean hasSameOrder = false;
             for (int idx = 0; idx < payOrderList.size(); idx++) {
                 JSONObject payOrderObject = (JSONObject) payOrderList.get(idx);
@@ -211,8 +210,8 @@ public class PayServiceImpl implements PayService {
                 }
             }
             if(hasSameOrder) { continue; }
-            cellOrderObject.put("qty", 1);
-            payOrderList.add(cellOrderObject);
+            groupOrderObject.put("qty", 1);
+            payOrderList.add(groupOrderObject);
         }
 
         for (Object orderObject : payOrderList) {
@@ -285,13 +284,13 @@ public class PayServiceImpl implements PayService {
 //            throw new RuntimeException(e);
 //        }
         if (statusCode == 200) {
-            JSONArray cellOrderIdJsonArray = new JSONArray();
-            for (String cellOrderId : cellOrderIdList) {
-                JSONObject cellOrderIdJsonObj = new JSONObject();
-                cellOrderIdJsonObj.put("_uuid", cellOrderId);
-                cellOrderIdJsonArray.add(cellOrderIdJsonObj);
+            JSONArray groupOrderIdJsonArray = new JSONArray();
+            for (String groupOrderId : groupOrderIdList) {
+                JSONObject groupOrderIdJsonObj = new JSONObject();
+                groupOrderIdJsonObj.put("_uuid", groupOrderId);
+                groupOrderIdJsonArray.add(groupOrderIdJsonObj);
             }
-            orderDAO.deleteOrder(cellOrderIdJsonArray);
+            orderDAO.deleteOrder(groupOrderIdJsonArray);
         }
         return ResponseData.builder()
                 .statusCode(statusCode)

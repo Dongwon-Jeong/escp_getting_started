@@ -11,13 +11,13 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
-public class CellDAOImpl implements CellDAO{
+public class GroupDAOImpl implements GroupDAO {
     private final CommonDAO commonDAO;
     private final MemberDAO memberDAO;
-    private final static String URL = "https://crudapi.co.uk/api/v1/cell";
+    private final static String URL = "https://crudapi.co.uk/api/v1/group";
 
     @Override
-    public int registerCell(String name) {
+    public int registerGroup(String name) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("name", name);
@@ -27,23 +27,23 @@ public class CellDAOImpl implements CellDAO{
 
     @Override
     public List<String> findAll() {
-        List<String> cellList = new ArrayList<>();
-        JSONArray items = getCellList();
+        List<String> groupList = new ArrayList<>();
+        JSONArray items = getGroupList();
         for (Object item : items) {
-            cellList.add((String) ((JSONObject) item).get("name"));
+            groupList.add((String) ((JSONObject) item).get("name"));
         }
-        return cellList;
+        return groupList;
 
     }
 
 
     @Override
-    public JSONArray findMemberByCell(String cell) {
-        JSONArray cellList = getCellList();
-        for (Object cellObj : cellList) {
-            if (cell.equals(((JSONObject) cellObj).get("name"))) {
+    public JSONArray findMemberByGroup(String group) {
+        JSONArray groupList = getGroupList();
+        for (Object groupObj : groupList) {
+            if (group.equals(((JSONObject) groupObj).get("name"))) {
                 JSONArray memberArray = new JSONArray();
-                JSONArray memberIdArray = (JSONArray) ((JSONObject) cellObj).get("member");
+                JSONArray memberIdArray = (JSONArray) ((JSONObject) groupObj).get("member");
                 if (memberIdArray != null) {
                     for (Object memberId : memberIdArray) {
                         JSONObject memberJson = memberDAO.getMemberById((String) memberId);
@@ -62,7 +62,7 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public int modifyCellName(String uuid, String name) {
+    public int modifyGroupName(String uuid, String name) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("_uuid", uuid);
@@ -76,47 +76,47 @@ public class CellDAOImpl implements CellDAO{
 
     @Override
     public int addMember(String uuid, String memberId) {
-        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
-        JSONArray memberArr = (JSONArray) cell.get("member");
+        JSONObject group = commonDAO.getItem(URL + "/" + uuid);
+        JSONArray memberArr = (JSONArray) group.get("member");
         if (memberArr == null) {
             memberArr = new JSONArray();
         }
         memberArr.add(memberId);
-        cell.put("member", memberArr);
+        group.put("member", memberArr);
         HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
-        return commonDAO.getResponseCode(connection, cell.toString());
+        return commonDAO.getResponseCode(connection, group.toString());
     }
 
     @Override
     public int deleteMember(String uuid, String memberId) {
-        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
-        JSONArray memberArr = (JSONArray) cell.get("member");
+        JSONObject group = commonDAO.getItem(URL + "/" + uuid);
+        JSONArray memberArr = (JSONArray) group.get("member");
         if (memberArr == null) {
             memberArr = new JSONArray();
         }
         memberArr.remove(memberId);
-        cell.put("member", memberArr);
+        group.put("member", memberArr);
         HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
-        return commonDAO.getResponseCode(connection, cell.toString());
+        return commonDAO.getResponseCode(connection, group.toString());
     }
 
     @Override
-    public JSONArray getCellList() {
+    public JSONArray getGroupList() {
         return commonDAO.getItems(URL);
     }
 
     @Override
-    public int deleteCell(String uuid) {
+    public int deleteGroup(String uuid) {
         return commonDAO.deleteItem(URL, uuid);
     }
 
     @Override
-    public String getCellIdByName(String name) {
-        JSONArray cellList = getCellList();
-        JSONObject cell = (JSONObject) cellList.stream()
-                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
+    public String getGroupIdByName(String name) {
+        JSONArray groupList = getGroupList();
+        JSONObject group = (JSONObject) groupList.stream()
+                .filter(groupObj -> ((JSONObject) groupObj).get("name").equals(name))
                 .findFirst()
                 .orElse(null);
-        return (cell != null) ? (String) cell.get("_uuid") : null;
+        return (group != null) ? (String) group.get("_uuid") : null;
     }
 }

@@ -9,6 +9,6 @@ public interface OrderService {
     int registerOrder(RegisterOrderRq registerOrderRq);
     int deleteOrder(String phone);
     boolean hasOrder(String phone);
-    List<Order> getOrderList(String cellName);
+    List<Order> getOrderList(String groupName);
     List<Order> getOrderListByPhone(String phone);
 }
