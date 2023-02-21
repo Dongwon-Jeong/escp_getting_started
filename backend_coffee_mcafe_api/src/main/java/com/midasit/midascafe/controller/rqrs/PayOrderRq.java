@@ -9,9 +9,9 @@ import javax.validation.constraints.NotBlank;
 public class PayOrderRq {
     @Schema(description = "결제자 휴대폰 번호")
     @NotBlank
-    String phone;
+    private String phone;
 
-    @Schema(description = "주문할 셀의 이름")
-    @NotBlank
-    String cell;
+//    @Schema(description = "주문할 셀의 이름")
+//    @NotBlank
+//    private String cell;
 }

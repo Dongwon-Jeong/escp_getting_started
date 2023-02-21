@@ -101,40 +101,6 @@ public class CellDAOImpl implements CellDAO{
     }
 
     @Override
-    public int addOrder(String uuid, String order) {
-        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
-        JSONArray orderArr = (JSONArray) cell.get("order");
-        if (orderArr == null) {
-            orderArr = new JSONArray();
-        }
-        orderArr.add(order);
-        cell.put("order", orderArr);
-        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
-        return commonDAO.getResponseCode(connection, cell.toString());
-    }
-
-    @Override
-    public int deleteOrder(String uuid, String order) {
-        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
-        JSONArray orderArr = (JSONArray) cell.get("order");
-        if (orderArr == null) {
-            orderArr = new JSONArray();
-        }
-        orderArr.remove(order);
-        cell.put("order", orderArr);
-        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
-        return commonDAO.getResponseCode(connection, cell.toString());
-    }
-
-    @Override
-    public int deleteOrder(String uuid) {
-        JSONObject cell = commonDAO.getItem(URL + "/" + uuid);
-        cell.put("order", null);
-        HttpURLConnection connection = commonDAO.getConnection(URL + "/" + uuid, "PUT");
-        return commonDAO.getResponseCode(connection, cell.toString());
-    }
-
-    @Override
     public JSONArray getCellList() {
         return commonDAO.getItems(URL);
     }
@@ -142,16 +108,6 @@ public class CellDAOImpl implements CellDAO{
     @Override
     public int deleteCell(String uuid) {
         return commonDAO.deleteItem(URL, uuid);
-    }
-
-    @Override
-    public List<String> getOrderIdListByName(String name) {
-        JSONArray cellList = getCellList();
-        JSONObject cell = (JSONObject) cellList.stream()
-                .filter(cellObj -> ((JSONObject) cellObj).get("name").equals(name))
-                .findFirst()
-                .orElse(null);
-        return (cell != null) ? (JSONArray) cell.get("order") : null;
     }
 
     @Override
@@ -163,5 +119,4 @@ public class CellDAOImpl implements CellDAO{
                 .orElse(null);
         return (cell != null) ? (String) cell.get("_uuid") : null;
     }
-
 }

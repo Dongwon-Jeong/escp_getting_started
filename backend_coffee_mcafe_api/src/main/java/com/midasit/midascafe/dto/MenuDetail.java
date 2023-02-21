@@ -11,10 +11,10 @@ import java.util.Map;
 @Getter
 @Setter
 public class MenuDetail {
-    String name;
-    String code;
-    Long unitPrice;
-    Long stock;
-    List<OptionGroup> optionGroupList;
-    Map<Long, OptionValue> optionValueMap;
+    private String name;
+    private String code;
+    private Long unitPrice;
+    private Long stock;
+    private List<OptionGroup> optionGroupList;
+    private Map<Long, OptionValue> optionValueMap;
 }

@@ -9,11 +9,11 @@ import javax.validation.constraints.NotBlank;
 public class RegisterMemberRq {
     @Schema(description = "구성원의 휴대폰 번호")
     @NotBlank
-    String phone;
+    private String phone;
     @Schema(description = "구성원의 이름")
     @NotBlank
-    String name;
+    private String name;
     @Schema(description = "구성원이 속한 셀")
     @NotBlank
-    String cell;
+    private String cell;
 }

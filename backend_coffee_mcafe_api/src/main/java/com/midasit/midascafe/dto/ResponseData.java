@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResponseData {
-    int statusCode;
-    String responseData;
+    private int statusCode;
+    private String responseData;
 }

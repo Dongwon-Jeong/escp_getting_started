@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 @Getter
 public class Order {
-    String name;
-    String menuName;
-    List<String> optionNameList;
+    private String name;
+    private String menuName;
+    private List<String> optionNameList;
 }

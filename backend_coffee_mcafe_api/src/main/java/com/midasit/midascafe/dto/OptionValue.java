@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OptionValue {
-    String name;
-    Long code;
-    Long price;
-    Boolean optionDefault;
+    private String name;
+    private Long code;
+    private Long price;
+    private Boolean isOptionDefault;
 }

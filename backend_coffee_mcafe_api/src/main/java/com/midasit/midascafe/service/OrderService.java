@@ -10,4 +10,5 @@ public interface OrderService {
     int deleteOrder(String phone);
     boolean hasOrder(String phone);
     List<Order> getOrderList(String cellName);
+    List<Order> getOrderListByPhone(String phone);
 }

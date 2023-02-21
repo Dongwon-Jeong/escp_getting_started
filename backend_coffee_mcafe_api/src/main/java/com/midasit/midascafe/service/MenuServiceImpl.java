@@ -19,6 +19,8 @@ import java.util.Map;
 public class MenuServiceImpl implements MenuService{
     private final MenuDAO menuDAO;
     private final CommonDAO commonDAO;
+    private Map<String, String> menuCodeToName = new HashMap<>();
+    private Map<Long, Long> optionCodeToPrice = new HashMap<>();
     @Override
     public int registerMenu(RegisterMenuRq registerMenuRq) {
         String name = registerMenuRq.getName();
@@ -63,23 +65,21 @@ public class MenuServiceImpl implements MenuService{
         String url = String.format("https://uchef.co.kr/webApp.action?mode=5170&item_code=%s&shop_member_seq=1859", menuCode);
         JSONObject menuItem = (JSONObject) ((JSONArray) ((JSONObject) (commonDAO.getItem(url).get("searchResult"))).get("list")).get(0);
         List<OptionGroup> optionGroupList = new ArrayList<>();
-
         JSONArray optionGroupJsonArray = (JSONArray) menuItem.get("option_group");
         Map<Long, OptionValue> optionValueMap = new HashMap<>();
         for (Object optionGroupObj : optionGroupJsonArray) {
             JSONObject optionGroupJson = (JSONObject) optionGroupObj;
             List<OptionValue> optionValueList = new ArrayList<>();
 
-
             JSONArray optionValueJsonArray = (JSONArray) optionGroupJson.get("options");
             for (Object optionValueObj : optionValueJsonArray) {
                 JSONObject optionValueJson = (JSONObject) optionValueObj;
-                Boolean optionDefault = (Long) optionValueJson.get("option_default") == 1L;
+                Boolean isOptionDefault = ((Long) optionValueJson.get("option_default")) == 1L;
                 OptionValue optionValue = OptionValue.builder()
                         .name((String) optionValueJson.get("option_name"))
                         .code((Long) optionValueJson.get("option_seq"))
                         .price((Long) optionValueJson.get("option_price"))
-                        .optionDefault(optionDefault)
+                        .isOptionDefault(isOptionDefault)
                         .build();
                 optionValueList.add(optionValue);
                 optionValueMap.put(optionValue.getCode(), optionValue);
@@ -100,5 +100,41 @@ public class MenuServiceImpl implements MenuService{
                 .optionGroupList(optionGroupList)
                 .optionValueMap(optionValueMap)
                 .build();
+    }
+
+    @Override
+    public String getMenuNameByMenuCode (String menuCode) {
+        if (menuCodeToName.containsKey(menuCode)) {
+            return menuCodeToName.get(menuCode);
+        } else {
+            MenuDetail menuDetail = getMenuDetail(menuCode);
+            String menuName = menuDetail.getName();
+            menuCodeToName.put(menuCode, menuName);
+            List<OptionGroup> optionGroupList = menuDetail.getOptionGroupList();
+            for (OptionGroup optionGroup : optionGroupList) {
+                List<OptionValue> optionValueList = optionGroup.getOptionValueList();
+                for (OptionValue optionValue : optionValueList) {
+                    optionCodeToPrice.put(optionValue.getCode(), optionValue.getPrice());
+                }
+            }
+            return menuName;
+        }
+    }
+
+    @Override
+    public Long getOptionPriceByOptionCode (Long optionCode, String menuCode) {
+        if (!optionCodeToPrice.containsKey(optionCode)) {
+            MenuDetail menuDetail = getMenuDetail(menuCode);
+            String menuName = menuDetail.getName();
+            menuCodeToName.put(menuCode, menuName);
+            List<OptionGroup> optionGroupList = menuDetail.getOptionGroupList();
+            for (OptionGroup optionGroup : optionGroupList) {
+                List<OptionValue> optionValueList = optionGroup.getOptionValueList();
+                for (OptionValue optionValue : optionValueList) {
+                    optionCodeToPrice.put(optionValue.getCode(), optionValue.getPrice());
+                }
+            }
+        }
+        return optionCodeToPrice.get(optionCode);
     }
 }

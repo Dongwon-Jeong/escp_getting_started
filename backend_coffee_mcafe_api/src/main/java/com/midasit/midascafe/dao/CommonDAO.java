@@ -14,5 +14,6 @@ public interface CommonDAO {
     JSONArray getItems(String url);
     JSONObject getItem(String url);
     int deleteItem(String url, String uuid);
+    int deleteItems(String url, JSONArray orderJsonArray);
     int getResponseCode(HttpURLConnection connection, String body);
 }
