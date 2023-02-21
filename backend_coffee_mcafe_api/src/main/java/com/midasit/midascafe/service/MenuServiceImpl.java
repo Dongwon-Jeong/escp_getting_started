@@ -7,7 +7,6 @@ import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MenuDAO;
 import com.midasit.midascafe.dto.*;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,7 +34,7 @@ public class MenuServiceImpl implements MenuService{
     @Override
     public int getProjectSeq() {
         if (projectSeq == -1) {
-            upDateProjectSeq();
+            updateProjectSeq();
         }
         return projectSeq;
     }
@@ -66,12 +65,12 @@ public class MenuServiceImpl implements MenuService{
 
     @Override
     public List<Menu> getMenuList() {
-        upDateProjectSeq();
+        updateProjectSeq();
         JsonNode responseJson = reqeustMenuData();
         return parseMenu(responseJson);
     }
 
-    private void upDateProjectSeq() {
+    private void updateProjectSeq() {
         if (menuClient == null) {
             menuClient = WebClient.builder()
                     .baseUrl("https://uchef.co.kr/")
