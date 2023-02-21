@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class OptionGroup {
-    String name;
-    Long selectMin;
-    Long selectMax;
-    List<OptionValue> optionValueList;
+    private String name;
+    private Long selectMin;
+    private Long selectMax;
+    private List<OptionValue> optionValueList;
 }

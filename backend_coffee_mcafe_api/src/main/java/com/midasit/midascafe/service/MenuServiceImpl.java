@@ -1,13 +1,21 @@
 package com.midasit.midascafe.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MenuDAO;
 import com.midasit.midascafe.dto.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +27,11 @@ import java.util.Map;
 public class MenuServiceImpl implements MenuService{
     private final MenuDAO menuDAO;
     private final CommonDAO commonDAO;
+    private static WebClient menuClient;
     private Map<String, String> menuCodeToName = new HashMap<>();
     private Map<Long, Long> optionCodeToPrice = new HashMap<>();
+    @Getter
+    private int projectSeq;
     @Override
     public int registerMenu(RegisterMenuRq registerMenuRq) {
         String name = registerMenuRq.getName();
@@ -47,15 +58,64 @@ public class MenuServiceImpl implements MenuService{
 
     @Override
     public List<Menu> getMenuList() {
+        upDateProjectSeq();
+        JsonNode responseJson = reqeustMenuData();
+        return parseMenu(responseJson);
+    }
+
+    private void upDateProjectSeq() {
+        if (menuClient == null) {
+            menuClient = WebClient.builder()
+                    .baseUrl("https://uchef.co.kr/")
+                    .defaultHeader(HttpHeaders.ACCEPT, "*/*")
+                    .build();
+        }
+        Mono<String> responseMono = menuClient.get()
+                .uri("/webApp.action?shop_member_seq=1859&mode=5150")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class);
+        String responseStr = responseMono.block();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson;
+        try {
+            responseJson = objectMapper.readTree(responseStr);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        projectSeq = responseJson.get("searchResult").get("memberData").get("default_project_seq").asInt();
+    }
+
+    private JsonNode reqeustMenuData() {
+        Mono<String> responseMono = menuClient.get()
+                .uri("/webApp.action?mode=5151&shop_member_seq=1859&project_seq={projectSeq}", projectSeq)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class);
+        String responseStr = responseMono.block();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson;
+        try {
+            responseJson = objectMapper.readTree(responseStr);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return responseJson;
+    }
+
+    private List<Menu> parseMenu(JsonNode responseJson) {
         List<Menu> menuList = new ArrayList<>();
-        JSONArray items = menuDAO.getMenuList();
-        for (Object item : items) {
-            menuList.add(Menu.builder()
-                    .name((String) ((JSONObject) item).get("name"))
-                    .code((String) ((JSONObject) item).get("code"))
-                    .unitPrice((Long) ((JSONObject) item).get("unitPrice"))
-                    .type((Long) ((JSONObject) item).get("type"))
-                    .build());
+        JsonNode menuPage = responseJson.get("searchResult").get("jsonData").get("PAGELIST").get("PAGE");
+        for (int idx = 0; idx < menuPage.size(); idx++) {
+            JsonNode ORDERBUTTONCOMP = menuPage.get(idx).get("LISTCOMP").get("LISTROW").get(0).get("ORDERBUTTONCOMP");
+            int type = idx;
+            ORDERBUTTONCOMP.forEach(menu -> menuList.add(Menu.builder()
+                    .name(menu.get("menutitle").asText())
+                    .code(menu.get("item_code").asText())
+                    .unitPrice(menu.get("price").asInt())
+                    .stock(menu.get("stock").asInt())
+                    .type(type)
+                    .build()));
         }
         return menuList;
     }
@@ -103,7 +163,7 @@ public class MenuServiceImpl implements MenuService{
     }
 
     @Override
-    public String getMenuNameByMenuCode (String menuCode) {
+    public String getMenuNameByMenuCode(String menuCode) {
         if (menuCodeToName.containsKey(menuCode)) {
             return menuCodeToName.get(menuCode);
         } else {
@@ -122,7 +182,7 @@ public class MenuServiceImpl implements MenuService{
     }
 
     @Override
-    public Long getOptionPriceByOptionCode (Long optionCode, String menuCode) {
+    public Long getOptionPriceByOptionCode(Long optionCode, String menuCode) {
         if (!optionCodeToPrice.containsKey(optionCode)) {
             MenuDetail menuDetail = getMenuDetail(menuCode);
             String menuName = menuDetail.getName();

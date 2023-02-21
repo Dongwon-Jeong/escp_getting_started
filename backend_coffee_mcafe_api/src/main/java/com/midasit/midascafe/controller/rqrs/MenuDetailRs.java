@@ -10,11 +10,11 @@ import java.util.List;
 @Builder
 @Getter
 public class MenuDetailRs {
-    String name;
-    String code;
-    Long unitPrice;
-    Long stock;
-    List<OptionGroup> optionGroupList;
+    private String name;
+    private String code;
+    private Long unitPrice;
+    private Long stock;
+    private List<OptionGroup> optionGroupList;
 
     public static MenuDetailRs of(MenuDetail menuDetail) {
         return MenuDetailRs.builder()

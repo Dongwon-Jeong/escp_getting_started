@@ -10,16 +10,16 @@ import javax.validation.constraints.NotNull;
 public class RegisterMenuRq {
     @Schema(description = "메뉴 이름")
     @NotBlank
-    String name;
+    private String name;
 
     @Schema(description = "메뉴 코드")
     @NotBlank
-    String code;
+    private String code;
 
     @Schema(description = "가격")
     @NotNull
-    Integer unitPrice;
+    private Integer unitPrice;
 
     @Schema(description = "0: COFFEE, 1: NON-COFFEE, 2: ADE & JUICE, 3: FLATCCINO, 4: BOTTLE, 5: SNACK, 6: S/W")
-    Integer type;
+    private Integer type;
 }

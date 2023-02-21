@@ -10,8 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 public class Menu {
-    String name;
-    String code;
-    Long unitPrice;
-    Long type;
+    private String name;
+    private String code;
+    private Integer unitPrice;
+    private Integer stock;
+    private Integer type;
 }
