@@ -15,11 +15,11 @@ public class OrderDAOImpl implements OrderDAO {
     private final static String URL = "https://crudapi.co.uk/api/v1/order";
 
     @Override
-    public ResponseData registerOrder(String memberId, String cellId, String menuCode, List<Integer> optionValueList) {
+    public ResponseData registerOrder(String memberId, String groupId, String menuCode, List<Integer> optionValueList) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("memberId", memberId);
-        data.put("cellId", cellId);
+        data.put("groupId", groupId);
         data.put("menuCode", menuCode);
         data.put("optionValueList", optionValueList);
         body.add(data);

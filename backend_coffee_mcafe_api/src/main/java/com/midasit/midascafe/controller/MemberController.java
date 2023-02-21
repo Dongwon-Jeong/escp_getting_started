@@ -26,7 +26,7 @@ public class MemberController {
         if (statusCode == 201) {
             return ResponseEntity.ok("멤버 등록 성공");
         } else if (statusCode == 404) {
-            return new ResponseEntity<>("셀이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("그룹이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         } else if (statusCode == 409) {
             return new ResponseEntity<>("이미 등록된 멤버입니다.", HttpStatus.CONFLICT);
         } else {

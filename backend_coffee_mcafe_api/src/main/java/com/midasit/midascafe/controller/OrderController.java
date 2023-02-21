@@ -49,7 +49,7 @@ public class OrderController {
         }
     }
 
-    @Operation(summary = "셀의 주문 목록", description = "해당 셀의 주문 목록을 조회합니다.")
+    @Operation(summary = "그룹의 주문 목록", description = "해당 그룹의 주문 목록을 조회합니다.")
     @GetMapping(value = "/{phone}")
     public ResponseEntity<List<Order>> getOrderList(@PathVariable(value = "phone") String phone) {
         return ResponseEntity.ok(orderService.getOrderListByPhone(phone));

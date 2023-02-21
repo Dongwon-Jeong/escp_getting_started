@@ -5,10 +5,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public interface MemberDAO {
-    ResponseData registerMember(String phone, String name, String cellId);
+    ResponseData registerMember(String phone, String name, String groupId);
     JSONObject getMemberById(String uuid);
     String getIdByPhone(String phone);
-    String getCellIdByPhone(String phone);
+    String getGroupIdByPhone(String phone);
     String getNameByPhone(String phone);
     JSONArray getMemberList();
     int deleteMember(String uuid);

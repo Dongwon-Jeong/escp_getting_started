@@ -13,12 +13,12 @@ public class MemberDAOImpl implements MemberDAO{
     private final CommonDAO commonDAO;
     private final static String URL = "https://crudapi.co.uk/api/v1/member";
     @Override
-    public ResponseData registerMember(String phone, String name, String cellId) {
+    public ResponseData registerMember(String phone, String name, String groupId) {
         JSONArray body = new JSONArray();
         JSONObject data = new JSONObject();
         data.put("phone", phone);
         data.put("name", name);
-        data.put("cell", cellId);
+        data.put("group", groupId);
         body.add(data);
         return commonDAO.postRequest(body, URL);
     }
@@ -36,8 +36,8 @@ public class MemberDAOImpl implements MemberDAO{
     }
 
     @Override
-    public String getCellIdByPhone(String phone) {
-        return getDataByPhone(phone, "cell");
+    public String getGroupIdByPhone(String phone) {
+        return getDataByPhone(phone, "group");
     }
 
     @Override
