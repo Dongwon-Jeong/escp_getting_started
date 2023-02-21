@@ -30,8 +30,16 @@ public class MenuServiceImpl implements MenuService{
     private static WebClient menuClient;
     private Map<String, String> menuCodeToName = new HashMap<>();
     private Map<Long, Long> optionCodeToPrice = new HashMap<>();
-    @Getter
-    private int projectSeq;
+    private int projectSeq = -1;
+
+    @Override
+    public int getProjectSeq() {
+        if (projectSeq == -1) {
+            upDateProjectSeq();
+        }
+        return projectSeq;
+    }
+
     @Override
     public int registerMenu(RegisterMenuRq registerMenuRq) {
         String name = registerMenuRq.getName();

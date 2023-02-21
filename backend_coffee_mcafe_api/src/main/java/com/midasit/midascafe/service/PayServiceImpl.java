@@ -129,7 +129,8 @@ public class PayServiceImpl implements PayService {
                     .append(phone)
                     .append("&pickup_time=&address=&pay_type=&is_pre_pay=0&cs_email=&cs_id=&coupon_id=welfare%20discount&coupon_amount=")
                     .append(totalPrice)
-                    .append("&point_amount=0&pay_tip=0&order_memo=&hoban_dc_json=&callback=angular.callbacks._5&shop_member_seq=1859&shop_id=&project_seq=7629");
+                    .append("&point_amount=0&pay_tip=0&order_memo=&hoban_dc_json=&callback=angular.callbacks._5&shop_member_seq=1859&shop_id=&project_seq=")
+                    .append(menuService.getProjectSeq());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
