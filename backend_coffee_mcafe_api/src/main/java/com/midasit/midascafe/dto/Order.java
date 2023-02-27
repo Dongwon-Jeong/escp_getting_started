@@ -1,14 +1,17 @@
 package com.midasit.midascafe.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
 @Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Order {
-    private String name;
-    private String menuName;
-    private List<String> optionNameList;
+    private String _uuid;
+    private String memberId;
+    private String menuCode;
+    private List<Integer> optionValueList;
+    private int quantity;
 }

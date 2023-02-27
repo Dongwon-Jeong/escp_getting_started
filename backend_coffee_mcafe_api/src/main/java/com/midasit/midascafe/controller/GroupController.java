@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -26,21 +27,21 @@ public class GroupController {
     @Operation(summary = "그룹 등록", description = "새로운 그룹을 등록합니다.")
     @PostMapping
     public ResponseEntity<String> registerGroup(@RequestBody @Valid RegisterGroupRq registerGroupRq) {
-        int statusCode = groupService.registerGroup(registerGroupRq);
+        HttpStatus statusCode = groupService.registerGroup(registerGroupRq);
 
-        if (statusCode == 201) {
+        if (statusCode == HttpStatus.CREATED) {
             return ResponseEntity.ok("그룹 등록 성공");
-        } else if (statusCode == 409) {
+        } else if (statusCode == HttpStatus.CONFLICT) {
             return new ResponseEntity<>("이미 등록된 그룹입니다.", HttpStatus.CONFLICT);
         } else {
-            return new ResponseEntity<>("그룹 등록에 실패하였습니다.", HttpStatus.valueOf(statusCode));
+            return new ResponseEntity<>("그룹 등록에 실패하였습니다.", statusCode);
         }
     }
 
     @Operation(summary = "그룹 목록 조회", description = "모든 그룹 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<String>> getGroupList() {
-        return new ResponseEntity<>(groupService.getGroupList(), HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> getGroupList() {
+        return new ResponseEntity<>(groupService.getGroupMap(), HttpStatus.OK);
     }
 
     @Operation(summary = "그룹 구성원 목록", description = "그룹 구성원 목록을 조회합니다.")
