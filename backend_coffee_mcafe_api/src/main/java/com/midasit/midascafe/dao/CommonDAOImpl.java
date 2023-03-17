@@ -1,36 +1,116 @@
 package com.midasit.midascafe.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.midasit.midascafe.dto.ResponseData;
+import com.midasit.midascafe.service.CommonService;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
+@RequiredArgsConstructor  // 생성자 주입
 public class CommonDAOImpl implements CommonDAO{
-    @Value("${database.api.key}")
-    private String API_KEY;
-
-    private static WebClient webClient;
+    private final CommonService commonService;
+    @Override
+    public <T> Mono<ResponseEntity<T>> postRequest(String uri, JsonNode body, Class<T> classType) {
+        return commonService.getDbClient().post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(body.toString())
+                .retrieve()
+                .toEntity(classType);
+    }
 
     @Override
-    public WebClient getWebClient() {
-        if (webClient == null) {
-            webClient = WebClient.builder()
-                    .baseUrl("https://crudapi.co.uk/api/v1")
-                    .defaultHeader(HttpHeaders.ACCEPT, "*/*")
-                    .defaultHeader(HttpHeaders.AUTHORIZATION, API_KEY)
-                    .build();
+    public <T> Mono<ResponseEntity<T>> getRequest(String uri, Class<T> classType) {
+        return commonService.getDbClient().get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .toEntity(classType);
+    }
+
+    @Override
+    public <T> Mono<ResponseEntity<T>> putRequest(String uri, JsonNode body, Class<T> classType) {
+        return commonService.getDbClient().put()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(body.toString())
+                .retrieve()
+                .toEntity(classType);
+    }
+
+    @Override
+    public <T> Mono<ResponseEntity<T>> deleteRequest(String uri, Class<T> classType) {
+        return commonService.getDbClient().delete()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .toEntity(classType);
+    }
+
+    @Override
+    public <T> Mono<ResponseEntity<T>> deleteRequestWithBody(String uri, JsonNode body, Class<T> classType) {
+        return commonService.getDbClient().method(HttpMethod.DELETE)
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .toEntity(classType);
+    }
+
+    @Override
+    public <T> List<T> getItemList(String uri, Class<T> classType) {
+        Mono<ResponseEntity<JsonNode>> itemListMono = getRequest(uri, JsonNode.class);
+        JsonNode itemListJson =  itemListMono.block().getBody().get("items");
+        ObjectMapper objectMapper = commonService.getObjectMapper();
+        List<T> itemList = new ArrayList<>();
+        itemListJson.forEach(x -> {
+            try {
+                itemList.add(objectMapper.treeToValue(x, classType));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return itemList;
+    }
+
+    @Override
+    public Map<String, String> getItemMap(String URI, String key, String value) {
+        Map<String, String> itemMap = new HashMap<>();
+        Mono<ResponseEntity<String>> groupMono = getRequest(URI, String.class);
+        ObjectMapper objectMapper = commonService.getObjectMapper();
+        String groupString = groupMono.block().getBody();
+        JsonNode groupJson;
+        try {
+            groupJson = objectMapper.readTree(groupString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        return webClient;
+        groupJson = groupJson.get("items");
+        for (JsonNode groupItem : groupJson) {
+            itemMap.put(groupItem.get(key).textValue(), groupItem.get(value).textValue());
+        }
+        return itemMap;
     }
 
     @Override
@@ -40,72 +120,13 @@ public class CommonDAOImpl implements CommonDAO{
             URL url = new URL(URL);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
-            connection.setRequestProperty("Authorization", API_KEY);
+            connection.setRequestProperty("Authorization", commonService.getApiKey());
             connection.setRequestProperty("Accept", "*/*");
             connection.setDoOutput(true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return connection;
-    }
-
-    @Override
-    public ResponseData postRequest(JSONArray body, String url) {
-        int responseCode;
-        String responseData;
-        try {
-            HttpURLConnection connection = getConnection(url, "POST");
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-            bw.write(body.toString());
-            bw.flush();
-            bw.close();
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-            StringBuffer sb = new StringBuffer();
-            while((responseData = br.readLine()) != null) {
-                sb.append(responseData);
-            }
-            responseData = sb.toString();
-            responseCode = connection.getResponseCode();
-            connection.disconnect();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return ResponseData
-                .builder()
-                .statusCode(responseCode)
-                .responseData(responseData)
-                .build();
-    }
-
-    @Override
-    public JSONArray getItems(String url) {
-        JSONArray items;
-        try {
-            HttpURLConnection connection = getConnection(url, "GET");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String inputLine;
-
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
-            }
-            if (connection.getResponseCode() >= 400) {
-                return null;
-            }
-            JSONParser parser = new JSONParser();
-            JSONObject response = (JSONObject) parser.parse(sb.toString());
-            items = (JSONArray) response.get("items");
-
-            connection.disconnect();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            return null;
-        }
-
-        return items;
     }
 
     @Override

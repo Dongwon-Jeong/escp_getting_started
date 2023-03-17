@@ -12,6 +12,7 @@ import java.util.List;
 public class Menu {
     private String name;
     private String code;
-    private Long unitPrice;
-    private Long type;
+    private Integer unitPrice;
+    private Integer stock;
+    private Integer type;
 }

@@ -1,17 +1,24 @@
 package com.midasit.midascafe.dao;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.midasit.midascafe.dto.Order;
 import com.midasit.midascafe.dto.ResponseData;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface OrderDAO {
-    ResponseData registerOrder(String memberId, String cellId, String menuCode, List<Integer> optionValueList);
+    ResponseEntity<String> registerOrder(Order order);
+
+    ResponseEntity<Order> getOrder(String uuid);
     int deleteOrder(JSONArray orderJsonArray);
 
-    int deleteOrder(String uuid);
+    HttpStatus deleteOrder(String orderId);
 
-    JSONArray getOrderList();
-    JSONObject getOrder(String uuid);
+    HttpStatus deleteOrders(JsonNode body);
+
+    List<Order> getOrderList();
 }

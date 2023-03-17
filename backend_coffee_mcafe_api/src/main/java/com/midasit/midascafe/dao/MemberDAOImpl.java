@@ -1,26 +1,54 @@
 package com.midasit.midascafe.dao;
 
-import com.midasit.midascafe.dto.ResponseData;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.midasit.midascafe.dto.Member;
+import com.midasit.midascafe.service.CommonService;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor  // 생성자 주입
 public class MemberDAOImpl implements MemberDAO{
 
     private final CommonDAO commonDAO;
+    private final CommonService commonService;
     private final static String URL = "https://crudapi.co.uk/api/v1/member";
+    private final static String URI = "/member";
+
+
     @Override
-    public ResponseData registerMember(String phone, String name, String cellId) {
-        JSONArray body = new JSONArray();
-        JSONObject data = new JSONObject();
-        data.put("phone", phone);
-        data.put("name", name);
-        data.put("cell", cellId);
+    public HttpStatus registerMember(Member member) {
+        List<JsonNode> body = new ArrayList<>();
+        ObjectNode data = commonService.getObjectMapper()
+                .valueToTree(member);
+        data.remove("_uuid");
         body.add(data);
-        return commonDAO.postRequest(body, URL);
+        ObjectMapper objectMapper = commonService.getObjectMapper();
+        ResponseEntity<String> responseEntity = commonDAO.postRequest(URI, objectMapper.valueToTree(body), String.class).block();
+
+        return responseEntity.getStatusCode();
+    }
+
+    @Override
+    public HttpStatus updateMember(String memberId, Map<String,Object> updateMemberMap) {
+        ObjectNode data = commonService.getObjectMapper()
+                .valueToTree(updateMemberMap);
+        ObjectMapper objectMapper = commonService.getObjectMapper();
+        ResponseEntity<String> responseEntity = commonDAO.putRequest(URI + "/" + memberId, objectMapper.valueToTree(data), String.class).block();
+
+        return responseEntity.getStatusCode();
+    }
+
+    @Override
+    public Map<String, String> getMemberMap() {
+        return commonDAO.getItemMap(URI, "phone", "name");
     }
 
     @Override
@@ -32,36 +60,29 @@ public class MemberDAOImpl implements MemberDAO{
 
     @Override
     public String getIdByPhone(String phone) {
-        return getDataByPhone(phone, "_uuid");
+
+//        return getDataByPhone(phone, "_uuid");
+        return null;
     }
 
     @Override
-    public String getCellIdByPhone(String phone) {
-        return getDataByPhone(phone, "cell");
+    public String getGroupIdByPhone(String phone) {
+        return null;
     }
 
     @Override
     public String getNameByPhone(String phone) {
-        return getDataByPhone(phone, "name");
-    }
-
-    private String getDataByPhone(String phone, String data) {
-        JSONArray memberList = getMemberList();
-        JSONObject member = (JSONObject) memberList.stream()
-                .filter(memberObj -> ((JSONObject) memberObj).get("phone").equals(phone))
-                .findFirst()
-                .orElse(null);
-        return (member != null) ? (String) member.get(data) : null;
+        return null;
     }
     @Override
-    public JSONArray getMemberList() {
-        return commonDAO.getItems(URL);
+    public List<Member> getMemberList() {
+        return commonDAO.getItemList(URI, Member.class);
     }
 
     @Override
-    public int deleteMember(String uuid) {
-        return commonDAO.deleteItem(URL, uuid);
+    public HttpStatus deleteMember(String memberId) {
+        String uri = new StringBuilder(URI).append("/").append(memberId).toString();
+        ResponseEntity<String> responseEntity = commonDAO.deleteRequest(uri, String.class).block();
+        return responseEntity.getStatusCode();
     }
-
-
 }

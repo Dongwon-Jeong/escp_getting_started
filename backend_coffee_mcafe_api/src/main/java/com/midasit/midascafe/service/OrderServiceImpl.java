@@ -1,15 +1,19 @@
 package com.midasit.midascafe.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.midasit.midascafe.controller.rqrs.RegisterOrderRq;
 import com.midasit.midascafe.dao.*;
 import com.midasit.midascafe.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +21,27 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
     private final MemberDAO memberDAO;
-    private final CellDAO cellDAO;
+    private final GroupDAO groupDAO;
+    private final CommonService commonService;
     private final MenuService menuService;
+    private final MemberService memberService;
+    private final GroupService groupService;
     @Override
-    public int registerOrder(RegisterOrderRq registerOrderRq) {
+    public HttpStatus registerOrder(RegisterOrderRq registerOrderRq) {
+        String groupId = registerOrderRq.getGroupId();
+        if (!groupService.areExistIds(new ArrayList<>(Arrays.asList(groupId)))) {
+            return HttpStatus.NOT_FOUND;
+        }
         String phone = registerOrderRq.getPhone();
-        if (hasOrder(phone)) { return 409; }
-        String memberId = memberDAO.getIdByPhone(phone);
-        String cellId = memberDAO.getCellIdByPhone(phone);
-        if(cellId == null) { return 404; }
+        String password = registerOrderRq.getPassword();
+        String memberId = memberService.getIdByPhone(phone);
+        if (!memberService.verifyPassword(phone, password)) {
+            return HttpStatus.UNAUTHORIZED;
+        }
+        if (memberId.isBlank()) {
+            return HttpStatus.NOT_FOUND;
+        }
+        int quantity = registerOrderRq.getQuantity();
         String menuCode = registerOrderRq.getMenuCode();
         List<Integer> optionValueList = registerOrderRq.getOptionValueList();
 
@@ -33,92 +49,53 @@ public class OrderServiceImpl implements OrderService {
         if (setDefault) {
             // TODO: 기본 옵션 처리
         }
-
-        ResponseData postResponse = orderDAO.registerOrder(memberId, cellId, menuCode, optionValueList);
-
-        return postResponse.getStatusCode();
+        Order order = Order.builder()
+                .memberId(memberId)
+                .menuCode(menuCode)
+                .optionValueList(optionValueList)
+                .quantity(quantity)
+                .build();
+        ResponseEntity<String> responseEntity = orderDAO.registerOrder(order);
+        if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
+            JsonNode responseJson;
+            try {
+                responseJson = commonService.getObjectMapper().readTree(responseEntity.getBody());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            String orderId = responseJson.get("items").get(0).get("_uuid").textValue();
+            return groupService.addOrderId(groupId, orderId);
+        }
+        return responseEntity.getStatusCode();
     }
 
     @Override
-    public int deleteOrder(String phone) {
-        JSONArray orders = orderDAO.getOrderList();
-        for (Object orderObject : orders) {
-            String orderMemberId = (String) ((JSONObject) orderObject).get("memberId");
-            String memberId = memberDAO.getIdByPhone(phone);
-            if(orderMemberId.equals(memberId)) {
-                String uuid = (String) ((JSONObject) orderObject).get("_uuid");
-                return orderDAO.deleteOrder(uuid);
-            }
+    public Order getOrder(String orderId) {
+        ResponseEntity<Order> orderResponseEntity = orderDAO.getOrder(orderId);
+        if (orderResponseEntity.getStatusCode() == HttpStatus.OK) {
+            return orderResponseEntity.getBody();
         }
-        return 404;
+        return null;
     }
 
     @Override
-    public boolean hasOrder(String phone) {
-        JSONArray orderList = orderDAO.getOrderList();
-        String memberId = memberDAO.getIdByPhone(phone);
-        for (Object order : orderList) {
-            String orderMemberId = (String) ((JSONObject) order).get("memberId");
-            if (orderMemberId.equals(memberId)) { return true; }
+    public HttpStatus deleteOrder(String authorizationValue, String orderId) {
+        Order order = getOrder(orderId);
+        if (!memberService.verifyAuthorization(authorizationValue, order.getMemberId())) {
+            return HttpStatus.UNAUTHORIZED;
         }
-        return false;
-    }
 
-    @Override
-    public List<Order> getOrderList(String cellName) {
-        // TODO:
-        String cellId = cellDAO.getCellIdByName(cellName);
-        JSONArray orderListJson = orderDAO.getOrderList();
-        JSONArray memberList = memberDAO.getMemberList();
-        List<Order> orderList = new ArrayList<>();
-        for (Object orderObj : orderListJson) {
-            JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
-                MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
-                List<String> optionNameList = new ArrayList<>();
-                JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
-                optionValueList.forEach(optionValue -> optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName()));
-                JSONObject member = (JSONObject) memberList.stream()
-                        .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))
-                        .findFirst()
-                        .orElse(null);
-                String name = (member != null) ? (String) member.get("name") : null;
-                orderList.add(Order.builder()
-                        .name(name)
-                        .menuName(menuDetail.getName())
-                        .optionNameList(optionNameList)
-                        .build());
-            }
+        List<Group> groupList = groupDAO.getGroupList();
+        Optional<Group> groupOptional = groupList.stream()
+                .filter(group -> group.getOrderIdList().contains(orderId))
+                .findFirst();
+        if (groupOptional.isEmpty()) {
+            return HttpStatus.NOT_FOUND;
         }
-        return orderList;
-    }
-
-    // 임시 메서드 고도화 때 사라질 예정
-    public List<Order> getOrderListByPhone(String phone) {
-        String cellId = memberDAO.getCellIdByPhone(phone);
-        // Todo: phone이 존재 하지 않는 회원일 때 처리
-        JSONArray orderListJson = orderDAO.getOrderList();
-        JSONArray memberList = memberDAO.getMemberList();
-        List<Order> orderList = new ArrayList<>();
-        for (Object orderObj : orderListJson) {
-            JSONObject orderJsonObj = (JSONObject) orderObj;
-            if (orderJsonObj.get("cellId").equals(cellId)) {
-                MenuDetail menuDetail = menuService.getMenuDetail((String) orderJsonObj.get("menuCode"));
-                List<String> optionNameList = new ArrayList<>();
-                JSONArray optionValueList = (JSONArray) orderJsonObj.get("optionValueList");
-                optionValueList.forEach(optionValue -> optionNameList.add(menuDetail.getOptionValueMap().get(optionValue).getName()));
-                JSONObject member = (JSONObject) memberList.stream()
-                        .filter(memberObj -> ((JSONObject) memberObj).get("_uuid").equals(orderJsonObj.get("memberId")))
-                        .findFirst()
-                        .orElse(null);
-                String name = (member != null) ? (String) member.get("name") : null;
-                orderList.add(Order.builder()
-                        .name(name)
-                        .menuName(menuDetail.getName())
-                        .optionNameList(optionNameList)
-                        .build());
-            }
-        }
-        return orderList;
+        Group group = groupOptional.get();
+        List<String> orderIdList = group.getOrderIdList();
+        orderIdList.remove(orderId);
+        groupService.removeOrderId(group.get_uuid(), orderIdList);
+        return orderDAO.deleteOrder(orderId);
     }
 }

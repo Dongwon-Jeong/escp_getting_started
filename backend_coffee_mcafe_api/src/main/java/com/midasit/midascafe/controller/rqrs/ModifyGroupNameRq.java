@@ -1,16 +1,13 @@
 package com.midasit.midascafe.controller.rqrs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 
-@Builder
 @Getter
-public class GetCellListRs {
-    @Schema(description = "셀 목록")
+public class ModifyGroupNameRq {
+    @Schema(description = "변경할 그룹의 기존 이름")
     @NotBlank
-    private List<String> cellList;
+    private String name;
 }

@@ -13,7 +13,7 @@ public class RegisterMemberRq {
     @Schema(description = "구성원의 이름")
     @NotBlank
     private String name;
-    @Schema(description = "구성원이 속한 셀")
+    @Schema(description = "M Cafe 직원확인 암호")
     @NotBlank
-    private String cell;
+    private String password;
 }

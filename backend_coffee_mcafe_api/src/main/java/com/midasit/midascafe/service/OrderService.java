@@ -2,13 +2,14 @@ package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.RegisterOrderRq;
 import com.midasit.midascafe.dto.Order;
+import org.springframework.http.HttpStatus;
 
-import java.util.List;
+
 
 public interface OrderService {
-    int registerOrder(RegisterOrderRq registerOrderRq);
-    int deleteOrder(String phone);
-    boolean hasOrder(String phone);
-    List<Order> getOrderList(String cellName);
-    List<Order> getOrderListByPhone(String phone);
+    HttpStatus registerOrder(RegisterOrderRq registerOrderRq);
+
+    Order getOrder(String orderId);
+
+    HttpStatus deleteOrder(String authorizationValue, String orderId);
 }
