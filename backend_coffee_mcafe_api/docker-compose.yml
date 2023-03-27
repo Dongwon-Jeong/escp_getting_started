@@ -1,9 +1,26 @@
 version: '3'
 services:
-  mcafe_api:
-    container_name: mcafe_api
-    restart: always
-    build:
-      context: .
+  coffee_db:
+    image: mysql:8.0
+    container_name: coffee_db
     ports:
-      - '8099:8080'
+      - 3333:3306
+    environment:
+      - MYSQL_HOST=localhost
+      - MYSQL_PORT=3306
+      - MYSQL_ROOT_PASSWORD=midasit
+      - MYSQL_DATABASE=m_cafe
+      - MYSQL_USER=brady
+      - MYSQL_PASSWORD=anyway
+      - TZ=Asia/Seoul
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+    restart: always
+#  mcafe_api:
+#    container_name: mcafe_api
+#    restart: always
+#    build:
+#      context: .
+#    ports:
+#      - '8099:8080'

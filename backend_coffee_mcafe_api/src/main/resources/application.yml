@@ -3,6 +3,20 @@ server:
 spring:
   profiles:
     active: ${spring.profiles.default:local}
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+  datasource:
+    url: jdbc:mysql://localhost:3333/m_cafe
+    username: brady
+    password: anyway
+    driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     path match:
       matching-strategy: ant_path_matcher
