@@ -8,6 +8,8 @@ import org.hibernate.annotations.Comment;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,5 +31,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     @Comment("구성원의 이름")
     private String name;
+
+
+    @OneToMany(mappedBy = "member")
+    private List<TeamMember> teamMembers = new ArrayList<>();
 
 }

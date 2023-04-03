@@ -14,10 +14,18 @@ import javax.persistence.*;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberTeam extends BaseEntity{
+public class TeamMember extends BaseEntity {
     @Id
-    @Column(name="member_team_id")
+    @Column(name="team_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("사용자 id")
+    @Comment("팀 멤버 조인 pk")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
