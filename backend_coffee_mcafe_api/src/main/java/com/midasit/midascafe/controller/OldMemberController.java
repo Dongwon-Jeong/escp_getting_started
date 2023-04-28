@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("member")
 @RequiredArgsConstructor  // 생성자 주입
-public class MemberController {
+public class OldMemberController {
     private final MemberService memberService;
 
     @Operation(summary = "멤버 등록", description = "새로운 멤버를 등록합니다.")

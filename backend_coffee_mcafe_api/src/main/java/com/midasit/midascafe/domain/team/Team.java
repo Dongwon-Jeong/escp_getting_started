@@ -1,5 +1,6 @@
-package com.midasit.midascafe.entity;
+package com.midasit.midascafe.domain.team;
 
+import com.midasit.midascafe.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,24 +9,26 @@ import org.hibernate.annotations.Comment;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TeamMember extends BaseEntity {
+public class Team extends BaseEntity {
     @Id
-    @Column(name="team_member_id")
+    @Column(name = "team_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("팀 멤버 조인 pk")
+    @Comment("Team pk")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Column(nullable = false, length = 40)
+    @Comment("이름")
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+
+    @OneToMany(mappedBy = "team")
+    private List<TeamMember> teamMembers = new ArrayList<>();
 }

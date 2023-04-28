@@ -1,4 +1,4 @@
-package com.midasit.midascafe.entity;
+package com.midasit.midascafe.base;
 
 import lombok.Getter;
 import org.hibernate.annotations.Comment;

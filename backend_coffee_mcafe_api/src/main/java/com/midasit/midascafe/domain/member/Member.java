@@ -1,5 +1,7 @@
-package com.midasit.midascafe.entity;
+package com.midasit.midascafe.domain.member;
 
+import com.midasit.midascafe.domain.team.TeamMember;
+import com.midasit.midascafe.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,18 +18,24 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Team extends BaseEntity {
+public class Member extends BaseEntity {
+
     @Id
-    @Column(name = "team_id")
+    @Column(name="member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("Team pk")
+    @Comment("사용자 id")
     private Long id;
 
-    @Column(nullable = false, length = 40)
-    @Comment("이름")
+    @Column(nullable = false)
+    @Comment("구성원의 휴대폰 번호")
+    private String phone;
+
+    @Column(nullable = false)
+    @Comment("구성원의 이름")
     private String name;
 
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "member")
     private List<TeamMember> teamMembers = new ArrayList<>();
+
 }
