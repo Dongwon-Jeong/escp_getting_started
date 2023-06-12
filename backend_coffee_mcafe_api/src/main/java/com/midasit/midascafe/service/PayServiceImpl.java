@@ -1,10 +1,11 @@
 package com.midasit.midascafe.service;
 
 import com.midasit.midascafe.controller.rqrs.PayOrderRq;
-import com.midasit.midascafe.dao.CellDAO;
 import com.midasit.midascafe.dao.CommonDAO;
 import com.midasit.midascafe.dao.MemberDAO;
 import com.midasit.midascafe.dao.OrderDAO;
+import com.midasit.midascafe.domain.pay.PayLog;
+import com.midasit.midascafe.domain.pay.PayLogRepository;
 import com.midasit.midascafe.dto.MenuDetail;
 import com.midasit.midascafe.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class PayServiceImpl implements PayService {
     private final OrderDAO orderDAO;
     private final CommonDAO commonDAO;
     private final MenuService menuService;
+    private final PayLogRepository payLogRepository;
 
     @Override
     public ResponseData payOrder(PayOrderRq payOrderRq) {
@@ -157,6 +161,7 @@ public class PayServiceImpl implements PayService {
                 cellOrderIdJsonArray.add(cellOrderIdJsonObj);
             }
             orderDAO.deleteOrder(cellOrderIdJsonArray);
+            payLogRepository.save(new PayLog(URL.toString()));
         }
         return ResponseData.builder()
                 .statusCode(statusCode)

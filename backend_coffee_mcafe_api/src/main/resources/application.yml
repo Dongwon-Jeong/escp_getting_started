@@ -1,11 +1,26 @@
 server:
   port: 8080
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://ap-northeast.connect.psdb.cloud/m_cafe?sslMode=VERIFY_IDENTITY
+    username: 69l64zxhk80y4d6hh9tl
+    password: pscale_pw_RQ40E7aNWQIwcN0MXjoMHHayFq7IptLgfXW2IPoPMs9
+
   profiles:
     active: ${spring.profiles.default:local}
   mvc:
     path match:
       matching-strategy: ant_path_matcher
+
 database:
   api:
     key: Bearer GeiISm46X8FXbkQmE10iHm6hc2hdtdzJlC05po8DSVNtzF-zOQ
