@@ -4,7 +4,6 @@ import com.midasit.midascafe.controller.rqrs.MenuDetailRs;
 import com.midasit.midascafe.controller.rqrs.RegisterMenuRq;
 import com.midasit.midascafe.dto.Menu;
 import com.midasit.midascafe.service.MenuService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Api(tags = "Menu Controller")
 @RestController
 @RequestMapping("menu")
 @RequiredArgsConstructor  // 생성자 주입

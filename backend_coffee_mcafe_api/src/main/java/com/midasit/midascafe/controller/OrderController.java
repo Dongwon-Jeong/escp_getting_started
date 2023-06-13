@@ -3,7 +3,6 @@ package com.midasit.midascafe.controller;
 import com.midasit.midascafe.controller.rqrs.RegisterOrderRq;
 import com.midasit.midascafe.dto.Order;
 import com.midasit.midascafe.service.OrderService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Api(tags = "Order Controller")
 @RestController
 @RequestMapping("order")
 @RequiredArgsConstructor  // 생성자 주입

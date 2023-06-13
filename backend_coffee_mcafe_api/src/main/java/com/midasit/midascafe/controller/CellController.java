@@ -4,7 +4,6 @@ package com.midasit.midascafe.controller;
 import com.midasit.midascafe.controller.rqrs.ModifyCellNameRq;
 import com.midasit.midascafe.controller.rqrs.RegisterCellRq;
 import com.midasit.midascafe.service.CellService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-@Api(tags = "Cell Controller")
 @RestController
 @RequestMapping("cell")
 @RequiredArgsConstructor  // 생성자 주입

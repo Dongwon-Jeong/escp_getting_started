@@ -2,7 +2,6 @@ package com.midasit.midascafe.controller;
 
 import com.midasit.midascafe.controller.rqrs.RegisterMemberRq;
 import com.midasit.midascafe.service.MemberService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Api(tags = "Member Controller")
 @RestController
 @RequestMapping("member")
 @RequiredArgsConstructor  // 생성자 주입
