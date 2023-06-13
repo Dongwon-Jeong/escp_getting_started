@@ -2,12 +2,14 @@ package com.midasit.midascafe.domain.pay;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @RequiredArgsConstructor
 public class PayLog {
     @Id
