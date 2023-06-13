@@ -12,8 +12,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://ap-northeast.connect.psdb.cloud/m_cafe?sslMode=VERIFY_IDENTITY
-    username: 69l64zxhk80y4d6hh9tl
-    password: pscale_pw_RQ40E7aNWQIwcN0MXjoMHHayFq7IptLgfXW2IPoPMs9
+    username: 5ma5ua65ht7lbtn5d5zx
+    password: pscale_pw_Hba6mG3jfTnN6jURGyJmwb7OKmpbqNPa1E06R0TgSpQ
 
   profiles:
     active: ${spring.profiles.default:local}
