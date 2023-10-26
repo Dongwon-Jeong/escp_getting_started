@@ -19,7 +19,7 @@ RUN apk --no-cache add tzdata && \
 RUN addgroup -S webgroup && adduser -S webuser -G webgroup
 USER webuser:webgroup
 
-ARG JAR_FILE=/app/build/libs/mcafe_api-0.0.1-SNAPSHOT.war
-COPY --from=build ${JAR_FILE} app.war
+ARG JAR_FILE=/app/build/libs/mcafe_api-0.0.1-SNAPSHOT.jar
+COPY --from=build ${JAR_FILE} app.jar
 
-ENTRYPOINT ["java", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
