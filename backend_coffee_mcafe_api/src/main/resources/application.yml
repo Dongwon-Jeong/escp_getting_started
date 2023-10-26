@@ -3,17 +3,15 @@ server:
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ap-northeast.connect.psdb.cloud/m_cafe?sslMode=VERIFY_IDENTITY
-    username: secret
-    password: secret
+    url: jdbc:postgresql://db.hvmsbjcnfsuqrfmexmjj.supabase.co:5432/postgres?currentSchema=mcafe
+    username: ${MCAFE_DB_USERNAME}
+    password: ${MCAFE_DB_PASSWORD}
 
   profiles:
     active: ${spring.profiles.default:local}
